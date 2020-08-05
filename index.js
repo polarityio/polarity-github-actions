@@ -24,7 +24,7 @@ const main = async () => {
   }
 };
 
-const getAllRepos = async (octokit, orgId, teamId, pageNumber = 0, agg = []) => {
+const getAllRepos = async (octokit, orgId, teamId, pageNumber = 1, agg = []) => {
   const repos = fp.getOr(
     [],
     'data',
@@ -35,11 +35,12 @@ const getAllRepos = async (octokit, orgId, teamId, pageNumber = 0, agg = []) => 
       page: pageNumber
     })
   );
-  if (repos.length < 100) {
-    console.log('repos', fp.map(fp.get('full_name'), agg.concat(repos)));
-    return agg.concat(repos);
-  }
-  await getAllRepos(octokit, orgId, teamId, pageNumber + 1, agg.concat(repos));
+  console.log('repos', fp.map(fp.get('full_name'), repos));
+  // if (repos.length < 100) {
+  //   console.log('repos', fp.map(fp.get('full_name'), agg.concat(repos)));
+  //   return agg.concat(repos);
+  // }
+  // await getAllRepos(octokit, orgId, teamId, pageNumber + 1, agg.concat(repos));
 };
 main();
 
