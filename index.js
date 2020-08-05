@@ -1,34 +1,30 @@
-const core = require("@actions/core");
-const github = require("@actions/github");
+const core = require('@actions/core');
+const github = require('@actions/github');
 const fp = require('lodash/fp');
 
 const main = async () => {
   try {
     console.log('Starting Deploy Project Actions...\n');
-    const projectId = core.getInput("project_id");
+    const projectId = core.getInput('project_id');
     const actionFileNames = fp.flow(
       fp.split('\n'),
       fp.map(fp.trim)
     )(core.getInput('action_file_names'));
-    
+
     console.log(JSON.stringify({ projectId, actionFileNames }, null, 2));
 
     const token = core.getInput('GITHUB_TOKEN');
 
     const octokit = github.getOctokit(token);
 
+    // console.log('octokit', octokit);
 
-    console.log('octokit', octokit)
-    // const repo = fp.get('context.payload.repository', github);
+    const repos = await octokit.teams.listReposInOrg({
+      org: projectId,
+      team_slug: 'staff'
+    });
 
-    // const releaseTags = fp.getOr(
-    //   [],
-    //   'data',
-    //   await octokit.repos.listTags({
-    //     owner: repo.owner.login,
-    //     repo: repo.name
-    //   })
-    // );
+    console.log('repos', fp.map(fp.get('full_name'), repos));
   } catch (error) {
     core.setFailed(error.message);
   }
