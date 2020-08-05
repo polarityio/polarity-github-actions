@@ -19,7 +19,8 @@ jobs:
       id: deploy_actions
       uses: ./
       with: 
-        project_id: polarityio
+        org_id: polarityio
+        team_id: staff
         action_file_names: |
           release-current-version.yml
           run-int-dev-checklist.yml
