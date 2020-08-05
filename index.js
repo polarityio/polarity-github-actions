@@ -31,12 +31,12 @@ const getAllRepos = async (octokit, orgId, teamId, pageNumber = 1, agg = []) => 
     await octokit.teams.listReposInOrg({
       org: orgId,
       team_slug: teamId,
-      per_page: 100,
+      per_page: 5,
       page: pageNumber
     })
   );
-  
-  if (repos.length < 100) {
+
+  if (repos.length < 5) {
     console.log('repos', fp.map(fp.get('full_name'), agg.concat(repos)));
     return agg.concat(repos);
   }
