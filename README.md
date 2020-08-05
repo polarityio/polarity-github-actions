@@ -1,5 +1,5 @@
 # Polarity Github Actions
-This repo contains all of our Github Actions we want to use in our project and the ability to publish them to all repos in the project.  This includes:
+This repo contains all of our Github Actions we want to use in our Organization and the ability to publish them to all repos in the Organization.  This includes:
 
 ## Release Current Version (release-current-version.yml)
 This workflow will run on merge of a PR or push to master. It will run the integration developement checklist and if that passes creates a new release with the Release and Tag name both being the package.json version and will with a created tgz file and the SHA256 has in the release description.

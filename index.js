@@ -4,7 +4,7 @@ const fp = require('lodash/fp');
 
 const main = async () => {
   try {
-    console.log('Starting Deploy Project Actions...\n');
+    console.log('Starting Deploy Organization Actions...\n');
     const orgId = core.getInput('org_id');
     const teamId = core.getInput('teamId');
     const actionFileNames = fp.flow(
@@ -12,7 +12,7 @@ const main = async () => {
       fp.map(fp.trim)
     )(core.getInput('action_file_names'));
 
-    console.log(JSON.stringify({ projectId, actionFileNames }, null, 2));
+    console.log(JSON.stringify({ orgId, teamId, actionFileNames }, null, 2));
 
     const token = core.getInput('GITHUB_TOKEN');
 
