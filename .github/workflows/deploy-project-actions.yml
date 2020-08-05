@@ -23,4 +23,4 @@ jobs:
         action_file_names: |
           release-current-version.yml
           run-int-dev-checklist.yml
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: efbef3a775bc640b4b794dccb452014cc4ac2b9b
