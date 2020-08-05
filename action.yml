@@ -7,6 +7,9 @@ inputs:
   action_file_names:
     description: 'The file names of all github acount that can be found at the root of this project that you want to deploy to all repos in the project'
     required: true
+  GITHUB_TOKEN:
+    description: 'Github token'
+    required: true
 branding:
   icon: 'triangle'  
   color: 'green'
