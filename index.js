@@ -24,7 +24,7 @@ const main = async () => {
       team_slug: 'staff'
     });
 
-    console.log('repos', repos);
+    console.log('repos', fp.map(fp.get('full_name'), repos.data));
   } catch (error) {
     core.setFailed(error.message);
   }
