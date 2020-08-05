@@ -23,9 +23,7 @@ const main = async () => {
       'data',
       await octokit.teams.listReposInOrg({
         org: orgId,
-        team_slug: teamId,
-        per_page: 10,
-        page: 1
+        team_slug: teamId
       })
     );
     console.log('repos', fp.map(fp.get('full_name'), repos));
