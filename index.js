@@ -18,7 +18,18 @@ const main = async () => {
 
     const octokit = github.getOctokit(token);
 
-    await getAllRepos(octokit, orgId, teamId);
+    const repo = fp.get('context.payload.repository', github);
+
+    const teams = fp.getOr(
+      [],
+      'data',
+      await octokit.repos.listTeams({
+        owner: repo.owner.login,
+        repo: repo.name
+      })
+    );
+    console.log('teams', teams);
+    // await getAllRepos(octokit, orgId, teamId);
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -31,12 +42,12 @@ const getAllRepos = async (octokit, orgId, teamId, pageNumber = 1, agg = []) => 
     await octokit.teams.listReposInOrg({
       org: orgId,
       team_slug: teamId,
-      per_page: 5,
+      per_page: 100,
       page: pageNumber
     })
   );
-
-  if (repos.length < 5) {
+  
+  if (repos.length < 100) {
     console.log('repos', fp.map(fp.get('full_name'), agg.concat(repos)));
     return agg.concat(repos);
   }
