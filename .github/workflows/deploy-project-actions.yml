@@ -20,4 +20,6 @@ jobs:
       uses: ./
       with: 
         project_id: polarityio
-        action_file_names: [ 'release-current-version.yml', 'run-int-dev-checklist.yml' ]
+        action_file_names: |
+          release-current-version.yml
+          run-int-dev-checklist.yml
