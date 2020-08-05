@@ -24,7 +24,7 @@ const main = async () => {
       await octokit.teams.listReposInOrg({
         org: orgId,
         team_slug: teamId,
-        per_page: 100,
+        per_page: 10,
         page: 1
       })
     );
