@@ -1,0 +1,15 @@
+name: 'Deploy Project Actions'
+description: 'This repo contains all of our Github Actions we want to use in our project and the ability to publish them to all repos in the project.'
+inputs:
+  project_id:
+    description: 'The ID of the project you want to deploy you actions to all repos in.  Can be found in your project page url (https://github.com/<project_id>)'
+    required: true
+  action_file_names:
+    description: 'The file names of all github acount that can be found at the root of this project that you want to deploy to all repos in the project'
+    required: true
+branding:
+  icon: 'triangle'  
+  color: 'green'
+runs:
+  using: 'node12'
+  main: 'index.js'

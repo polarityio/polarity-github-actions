@@ -1,0 +1,11 @@
+{
+  "name": "polarity-github-actions",
+  "version": "v1.0.0",
+  "description": "This repo contains all of our Github Actions we want to use in our project and the ability to publish them to all repos in the project.",
+  "main": "index.js",
+  "dependencies": {
+    "@actions/core": "^1.1.0",
+    "@actions/github": "^4.0.0",
+    "lodash": "^4.17.19"
+  }
+}
