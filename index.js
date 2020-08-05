@@ -17,19 +17,29 @@ const main = async () => {
 
     const octokit = github.getOctokit(token);
 
-    // console.log('octokit', octokit);
-
-    const repos = await octokit.teams.listReposInOrg({
-      org: projectId,
-      team_slug: 'staff'
-    });
-
-    console.log('repos', fp.map(fp.get('full_name'), repos.data));
+    await getAllRepos(octokit);
   } catch (error) {
     core.setFailed(error.message);
   }
 };
 
+const getAllRepos = async (octokit, pageNumber = 0, agg = []) => {
+  const repos = fp.getOr(
+    [],
+    'data',
+    await octokit.teams.listReposInOrg({
+      org: projectId,
+      team_slug: 'staff',
+      per_page: 100,
+      page: pageNumber
+    })
+  );
+  if (repos.length < 100) {
+    console.log('repos', fp.map(fp.get('full_name'), agg.concat(repos)));
+    return agg.concat(repos);
+  }
+  await getAllRepos(octokit, pageNumber + 1, agg.concat(repos));
+};
 main();
 
 module.exports = main;
