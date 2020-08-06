@@ -2,7 +2,6 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const fp = require('lodash/fp');
 const fs = require('fs');
-
 const main = async () => {
   try {
     console.log('Starting Deploy Organization Actions...\n');
@@ -39,7 +38,9 @@ const main = async () => {
                 path: `.github/workflows/${actionFileName}`,
                 message: `Uploading Github Action: ${actionFileName}`,
                 branch: 'master',
-                content: fs.readFileSync('run-int-dev-checklist.yml', 'base64'),
+                content: new Buffer(
+                  fs.readFileSync('run-int-dev-checklist.yml')
+                ).toString('base64'),
                 committer: {
                   name: 'polarityio',
                   email: 'info@polarity.io'
