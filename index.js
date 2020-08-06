@@ -36,7 +36,7 @@ const main = async () => {
                 owner: 'polarityio',
                 repo: repoName,
                 path: `.github/workflows/${actionFileName}`,
-                message: `Uploading Github Action: ${actionFileName}`,
+                message: `Uploading Github Action: ${actionFileName}s`,
                 branch: 'master',
                 content: new Buffer(
                   fs.readFileSync('run-int-dev-checklist.yml', 'utf8')
