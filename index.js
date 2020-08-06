@@ -38,7 +38,7 @@ const main = async () => {
                 path: `.github/workflows/${actionFileName}`,
                 message: `Uploading Github Action: ${actionFileName}`,
                 branch: 'master',
-                content: 'name: ActionFileContents',
+                content: new Buffer('name: ActionFileContents').toString('base64'),
                 committer: {
                   name: 'polarityio',
                   email: 'info@polarity.io'
