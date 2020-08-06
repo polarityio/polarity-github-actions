@@ -7,9 +7,10 @@ const main = async () => {
     console.log('Starting Deploy Organization Actions...\n');
     const orgId = core.getInput('org_id');
     const actionFileNames = fp.flow(
+      core.getInput,
       fp.split('\n'),
       fp.map(fp.trim)
-    )(core.getInput('action_file_names'));
+    )('action_file_names');
 
     console.log(JSON.stringify({ orgId, actionFileNames }, null, 2));
 
@@ -26,7 +27,35 @@ const main = async () => {
     });
     // const allOrgRepos = await getAllRepos(octokit, orgId);
 
-    // const repoNames = fp.map(fp.get('full_name'), allOrgRepos);
+    const fileCreationReponses = await Promise.all(
+      fp.flatMap(
+        ({ name: repoName }) =>
+          fp.map(
+            (actionFileName) =>
+              octokit.repos.createOrUpdateFileContents({
+                owner: 'polarityio',
+                repo: repoName,
+                path: `.github/workflows/${actionFileName}`,
+                message: `Uploading Github Action: ${actionFileName}`,
+                branch: 'master',
+                content: 'name: ActionFileContents',
+                committer: {
+                  name: 'polarityio',
+                  email: 'info@polarity.io'
+                },
+                author: {
+                  name: 'polarityio',
+                  email: 'info@polarity.io'
+                }
+              }),
+            ['test-file-upload.yml'] //actionFileNames
+          ),
+        [{ name: 'testing-github-actions' }] //allOrgRepos
+      )
+    );
+
+
+    console.log('fileCreationReponses', fileCreationReponses);
 
   } catch (error) {
     core.setFailed(error.message);
