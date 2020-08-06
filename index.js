@@ -2,8 +2,8 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const fp = require('lodash/fp');
 
-const getAllReposInOrg = require('getAllReposInOrg');
-const uploadActions = require('uploadActions');
+const getAllReposInOrg = require('./getAllReposInOrg');
+const uploadActions = require('./uploadActions');
 
 const main = async () => {
   try {
