@@ -39,7 +39,7 @@ const main = async () => {
                 message: `Uploading Github Action: ${actionFileName}`,
                 branch: 'master',
                 content: new Buffer(
-                  fs.readFileSync('run-int-dev-checklist.yml')
+                  fs.readFileSync('run-int-dev-checklist.yml', 'utf8')
                 ).toString('base64'),
                 committer: {
                   name: 'polarityio',
