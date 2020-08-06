@@ -32,13 +32,19 @@ const main = async () => {
         ({ name: repoName }) =>
           fp.map(
             async (actionFileName) => {
-              const existingFileSha = fp.get(
+              let existingFileSha = fp.get(
                 'data.sha',
-                await octokit.repos.getContent({
-                  owner: 'polarityio',
-                  repo: repoName,
-                  path: `.github/workflows/${actionFileName}`
-                })
+                await octokit.repos
+                  .getContent({
+                    owner: 'polarityio',
+                    repo: repoName,
+                    path: `.github/workflows/${actionFileName}`
+                  })
+                  .catch((error) => {
+                    if (!error.message.includes('Not Found')) {
+                      throw error;
+                    }
+                  })
               );
 
               await octokit.repos.createOrUpdateFileContents({
@@ -48,7 +54,7 @@ const main = async () => {
                 message: `Uploading Github Action: ${actionFileName}`,
                 branch: 'master',
                 ...(existingFileSha && { sha: existingFileSha }),
-                content: fs.readFileSync('run-int-dev-checklist.yml', 'base64'),
+                content: fs.readFileSync(actionFileName, 'base64'),
                 committer: {
                   name: 'polarityio',
                   email: 'info@polarity.io'
