@@ -49,7 +49,7 @@ const main = async () => {
                 message: `Uploading Github Action: ${actionFileName}`,
                 branch: 'master',
                 ...(existingFileSha && { sha: existingFileSha }),
-                content: fs.readFileSync(actionFileName, 'base64'),
+                content: Buffer.from("name: testing stuff").toString('base64'),//fs.readFileSync(actionFileName, 'base64'),
                 committer: {
                   name: 'polarityio',
                   email: 'info@polarity.io'
