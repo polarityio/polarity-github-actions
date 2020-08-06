@@ -12,19 +12,12 @@ const main = async () => {
       fp.map(fp.trim)
     )('action_file_names');
 
-    console.log(JSON.stringify({ orgId, actionFileNames }, null, 2));
-
     const token = core.getInput('GITHUB_TOKEN');
 
     const octokit = github.getOctokit(token);
     
     const repo = fp.get('context.payload.repository', github);
 
-    console.log('type of path', {
-      owner: repo.owner.login,
-      repo: repo.name,
-      repoContents: repo
-    });
     // const allOrgRepos = await getAllRepos(octokit, orgId);
 
     const fileCreationReponses = await Promise.all(
@@ -32,7 +25,7 @@ const main = async () => {
         ({ name: repoName }) =>
           fp.map(
             async (actionFileName) => {
-              let existingFileSha = fp.get(
+              const existingFileSha = fp.get(
                 'data.sha',
                 await octokit.repos
                   .getContent({
@@ -47,6 +40,10 @@ const main = async () => {
                   })
               );
 
+              console.log(
+                JSON.stringify({ repoName, existingFileSha, actionFileName }, null, 2)
+              );
+              
               await octokit.repos.createOrUpdateFileContents({
                 owner: 'polarityio',
                 repo: repoName,
