@@ -20,15 +20,17 @@ const main = async () => {
 
     const repo = fp.get('context.payload.repository', github);
 
-    const teams = fp.getOr(
-      [],
-      'data',
-      await octokit.repos.listTeams({
-        owner: repo.owner.login,
-        repo: repo.name
-      })
-    );
-    console.log('teams', teams);
+    const teams = await octokit.repos.listTeams({
+      owner: repo.owner.login,
+      repo: repo.name
+    });
+    console.log('teams', JSON.stringify(teams, null, 2));
+
+    const repos = await octokit.repos.listForOrg({
+      org: orgId,
+      per_page: 100,
+    });
+    console.log('repos', JSON.stringify(repos, null, 2));
     // await getAllRepos(octokit, orgId, teamId);
   } catch (error) {
     core.setFailed(error.message);
