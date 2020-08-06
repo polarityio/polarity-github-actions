@@ -45,7 +45,7 @@ const main = async () => {
                 owner: 'polarityio',
                 repo: repoName,
                 path: `.github/workflows/${actionFileName}`,
-                message: `Uploading Github Action: ${actionFileName}s`,
+                message: `Uploading Github Action: ${actionFileName}`,
                 branch: 'master',
                 ...(existingFileSha && { sha: existingFileSha }),
                 content: fs.readFileSync('run-int-dev-checklist.yml', 'base64'),
@@ -59,7 +59,7 @@ const main = async () => {
                 }
               });
             },
-            ['test-file-upload.yml'] //actionFileNames
+            actionFileNames
           ),
         [{ name: 'testing-github-actions' }] //allOrgRepos
       )
