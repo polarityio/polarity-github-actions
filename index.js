@@ -6,7 +6,6 @@ const main = async () => {
   try {
     console.log('Starting Deploy Organization Actions...\n');
     const orgId = core.getInput('org_id');
-    const teamId = core.getInput('team_id');
     const actionFileNames = fp.flow(
       fp.split('\n'),
       fp.map(fp.trim)
@@ -18,32 +17,18 @@ const main = async () => {
 
     const octokit = github.getOctokit(token);
 
-    const repo = fp.get('context.payload.repository', github);
-
-    const teams = await octokit.repos.listTeams({
-      owner: repo.owner.login,
-      repo: repo.name
-    });
-    console.log('teams', JSON.stringify(teams, null, 2));
-
-    const repos = await octokit.repos.listForOrg({
-      org: orgId,
-      per_page: 100,
-    });
-    console.log('repos', JSON.stringify(repos, null, 2));
-    // await getAllRepos(octokit, orgId, teamId);
+    await getAllRepos(octokit, orgId, );
   } catch (error) {
     core.setFailed(error.message);
   }
 };
 
-const getAllRepos = async (octokit, orgId, teamId, pageNumber = 1, agg = []) => {
+const getAllRepos = async (octokit, orgId, pageNumber = 1, agg = []) => {
   const repos = fp.getOr(
     [],
     'data',
-    await octokit.teams.listReposInOrg({
+    await octokit.repos.listForOrg({
       org: orgId,
-      team_slug: teamId,
       per_page: 100,
       page: pageNumber
     })
@@ -53,7 +38,8 @@ const getAllRepos = async (octokit, orgId, teamId, pageNumber = 1, agg = []) => 
     console.log('repos', fp.map(fp.get('full_name'), agg.concat(repos)));
     return agg.concat(repos);
   }
-  await getAllRepos(octokit, orgId, teamId, pageNumber + 1, agg.concat(repos));
+
+  await getAllRepos(octokit, orgId, pageNumber + 1, agg.concat(repos));
 };
 main();
 

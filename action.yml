@@ -4,9 +4,6 @@ inputs:
   org_id:
     description: 'The ID of the Organization containing all of the repositories you want to deploy your actions to.  Can be found in your Organization page url (https://github.com/<org_id>)'
     required: true
-  team_id:
-    description: 'The ID of the Team that has access to all of the repositories you want to deploy your actions to.  Can be found in your Organization Teams page url (https://github.com/orgs/<org_id>/teams/<team_id>)'
-    required: true
   action_file_names:
     description: 'The file names of all github acount that can be found at the root of this Organization that you want to deploy to all repos in the Organization'
     required: true
