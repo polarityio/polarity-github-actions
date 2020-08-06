@@ -40,7 +40,9 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
             }
           });
 
-          console.log(`- Succeeded in Uploading Actions to Repo: ${repoName}`);
+          console.log(
+            `- Succeeded in Uploading Action File ${actionFileName} to Repo ${repoName}`
+          );
         },
         actionFileNames
       ),
