@@ -11,13 +11,13 @@ const main = async () => {
       fp.map(fp.trim)
     )(core.getInput('action_file_names'));
 
-    console.log(JSON.stringify({ orgId, teamId, actionFileNames }, null, 2));
+    console.log(JSON.stringify({ orgId, actionFileNames }, null, 2));
 
     const token = core.getInput('GITHUB_TOKEN');
 
     const octokit = github.getOctokit(token);
 
-    await getAllRepos(octokit, orgId, );
+    await getAllRepos(octokit, orgId);
   } catch (error) {
     core.setFailed(error.message);
   }
