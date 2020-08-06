@@ -31,16 +31,24 @@ const main = async () => {
       fp.flatMap(
         ({ name: repoName }) =>
           fp.map(
-            (actionFileName) =>
-              octokit.repos.createOrUpdateFileContents({
+            async (actionFileName) => {
+              const existingFileSha = fp.get(
+                'data.sha',
+                await octokit.repos.getContent({
+                  owner: 'polarityio',
+                  repo: repoName,
+                  path: `.github/workflows/${actionFileName}`
+                })
+              );
+
+              await octokit.repos.createOrUpdateFileContents({
                 owner: 'polarityio',
                 repo: repoName,
                 path: `.github/workflows/${actionFileName}`,
                 message: `Uploading Github Action: ${actionFileName}s`,
                 branch: 'master',
-                content: new Buffer(
-                  fs.readFileSync('run-int-dev-checklist.yml', 'utf8')
-                ).toString('base64'),
+                ...(existingFileSha && { sha: existingFileSha }),
+                content: fs.readFileSync('run-int-dev-checklist.yml', 'base64'),
                 committer: {
                   name: 'polarityio',
                   email: 'info@polarity.io'
@@ -49,7 +57,8 @@ const main = async () => {
                   name: 'polarityio',
                   email: 'info@polarity.io'
                 }
-              }),
+              });
+            },
             ['test-file-upload.yml'] //actionFileNames
           ),
         [{ name: 'testing-github-actions' }] //allOrgRepos
@@ -57,7 +66,7 @@ const main = async () => {
     );
 
 
-    console.log('fileCreationReponses', fileCreationReponses);
+    console.log('fileCreationReponses', JSON.stringify(fileCreationReponses, null, 2));
 
   } catch (error) {
     core.setFailed(error.message);
