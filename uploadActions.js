@@ -44,7 +44,7 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
         },
         actionFileNames
       ),
-    [{ name: 'testing-github-actions' }] //allOrgRepos
+    allOrgRepos.slice(0, 3)
   );
 
   // Must run file creation in series due to the common use of the octokit instantiation
