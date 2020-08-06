@@ -16,8 +16,18 @@ const main = async () => {
     const token = core.getInput('GITHUB_TOKEN');
 
     const octokit = github.getOctokit(token);
+    
+    const repo = fp.get('context.payload.repository', github);
 
-    await getAllRepos(octokit, orgId);
+    console.log('type of path', {
+      owner: repo.owner.login,
+      repo: repo.name,
+      repoContents: repo
+    });
+    // const allOrgRepos = await getAllRepos(octokit, orgId);
+
+    // const repoNames = fp.map(fp.get('full_name'), allOrgRepos);
+
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -35,7 +45,7 @@ const getAllRepos = async (octokit, orgId, pageNumber = 1, agg = []) => {
   );
   
   if (repos.length < 100) {
-    console.log('repos', fp.map(fp.get('full_name'), agg.concat(repos)).length);
+    console.log('repos', agg.concat(repos)[0]);
     return agg.concat(repos);
   }
 
