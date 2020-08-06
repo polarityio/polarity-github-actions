@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const fp = require('lodash/fp');
+const fs = require('fs');
 
 const main = async () => {
   try {
@@ -38,7 +39,9 @@ const main = async () => {
                 path: `.github/workflows/${actionFileName}`,
                 message: `Uploading Github Action: ${actionFileName}`,
                 branch: 'master',
-                content: new Buffer('name: ActionFileContents').toString('base64'),
+                content: fs.readFileSync(`./run-int-dev-checklist.yml`, {
+                  encoding: 'base64'
+                }),
                 committer: {
                   name: 'polarityio',
                   email: 'info@polarity.io'
