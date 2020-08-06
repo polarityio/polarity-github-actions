@@ -68,7 +68,7 @@ const main = async () => {
       await fn(); 
     }
 
-    console.log('fileCreationReponses', JSON.stringify(fileCreationReponses, null, 2));
+    // console.log('fileCreationReponses', JSON.stringify(fileCreationReponses, null, 2));
   } catch (error) {
     core.setFailed(error);
   }
