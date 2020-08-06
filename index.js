@@ -35,7 +35,7 @@ const getAllRepos = async (octokit, orgId, pageNumber = 1, agg = []) => {
   );
   
   if (repos.length < 100) {
-    console.log('repos', fp.map(fp.get('full_name'), agg.concat(repos)));
+    console.log('repos', fp.map(fp.get('full_name'), agg.concat(repos)).length);
     return agg.concat(repos);
   }
 
