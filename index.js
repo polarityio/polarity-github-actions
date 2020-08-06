@@ -16,8 +16,6 @@ const main = async () => {
 
     const octokit = github.getOctokit(token);
     
-    const repo = fp.get('context.payload.repository', github);
-
     // const allOrgRepos = await getAllRepos(octokit, orgId);
 
     const fileCreationReponses = await Promise.all(
@@ -43,7 +41,7 @@ const main = async () => {
               console.log(
                 JSON.stringify({ repoName, existingFileSha, actionFileName }, null, 2)
               );
-              
+
               await octokit.repos.createOrUpdateFileContents({
                 owner: 'polarityio',
                 repo: repoName,
@@ -72,7 +70,7 @@ const main = async () => {
     console.log('fileCreationReponses', JSON.stringify(fileCreationReponses, null, 2));
 
   } catch (error) {
-    core.setFailed(error.message);
+    core.setFailed(error);
   }
 };
 
