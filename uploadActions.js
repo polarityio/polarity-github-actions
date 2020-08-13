@@ -11,6 +11,7 @@ const REPO_BLOCK_LIST = [
 
 const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
   console.log('\nAction Files to Upload: ', actionFileNames, '\n');
+  console.log('\nREPOS???: ', actionFileNames, '\n');
   const fileCreationFunctions = fp.flow(
     fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST)),
     fp.flatMap(({ name: repoName }) =>
@@ -31,7 +32,7 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
                 }
               })
           );
-          
+
           await octokit.repos.createOrUpdateFileContents({
             owner: 'polarityio',
             repo: repoName,
@@ -55,7 +56,7 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
         actionFileNames
       )
     )
-  )(['testing-github-actions']);
+  )([{ name: 'testing-github-actions' }]);
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fn of fileCreationFunctions) {
