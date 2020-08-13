@@ -20,9 +20,10 @@ const main = async () => {
     const octokit = github.getOctokit(token);
 
     const allOrgRepos = await getAllReposInOrg(octokit, orgId);
-    
-    await uploadActions(octokit, allOrgRepos, actionFileNames);
 
+    console.log('REPOS: ', JSON.stringify(allOrgRepos, null, 2))
+    await uploadActions(octokit, allOrgRepos, actionFileNames);
+    
   } catch (error) {
     core.setFailed(error);
   }

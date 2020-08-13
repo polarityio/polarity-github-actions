@@ -1,10 +1,19 @@
 const fp = require('lodash/fp');
 const fs = require('fs');
+const REPO_BLOCK_LIST = [
+  // 'testing-github-actions',
+  'reference-channels',
+  'node-maxmind',
+  'polarityio.github.io',
+  'polarity-github-actions',
+  'polarity-integration-development-checklist'
+];
 
 const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
   console.log('\nAction Files to Upload: ', actionFileNames, '\n');
-  const fileCreationFunctions = fp.flatMap(
-    ({ name: repoName }) =>
+  const fileCreationFunctions = fp.flow(
+    fp.filter((repo) => fp.includes(repo.name, REPO_BLOCK_LIST)),
+    fp.flatMap(({ name: repoName }) =>
       fp.map(
         (actionFileName) => async () => {
           const existingFileSha = fp.get(
@@ -27,7 +36,7 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
             repo: repoName,
             path: `.github/workflows/${actionFileName}`,
             message: `Uploading Github Action: ${actionFileName}`,
-            branch: 'master',
+            branch: 'develop',
             ...(existingFileSha && { sha: existingFileSha }),
             content: fs.readFileSync(actionFileName, 'base64'),
             committer: {
@@ -43,9 +52,9 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
           console.log(`- Action Upload Success: ${repoName} <- ${actionFileName}`);
         },
         actionFileNames
-      ),
-    [{ name: 'testing-github-actions' }] //allOrgRepos
-  );
+      )
+    )
+  )(['testing-github-actions']);
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fn of fileCreationFunctions) {
