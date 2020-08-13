@@ -1,7 +1,7 @@
 const fp = require('lodash/fp');
 const fs = require('fs');
 const REPO_BLOCK_LIST = [
-  'testing-github-actions',
+  // 'testing-github-actions',
   'reference-channels',
   'node-maxmind',
   'polarityio.github.io',
@@ -54,7 +54,7 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
         actionFileNames
       )
     )
-  )(['repo-names']);
+  )(['testing-github-actions']);
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fn of fileCreationFunctions) {
