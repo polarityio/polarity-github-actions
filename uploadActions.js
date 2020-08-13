@@ -16,21 +16,28 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
     fp.flatMap(({ name: repoName }) =>
       fp.map(
         (actionFileName) => async () => {
-          const existingFileSha = fp.get(
-            'data.sha',
-            await octokit.repos
-              .getContent({
-                owner: 'polarityio',
-                repo: repoName,
-                path: `.github/workflows/${actionFileName}`
-              })
-              .catch((error) => {
-                if (!error.message.includes('Not Found')) {
-                  throw error;
-                }
-              })
-          );
-
+          let existingFileSha;
+          try {
+            existingFileSha = fp.get(
+              'data.sha',
+              await octokit.repos
+                .getContent({
+                  owner: 'polarityio',
+                  repo: repoName,
+                  path: `.github/workflows/${actionFileName}`
+                })
+                .catch((error) => {
+                  if (!error.message.includes('Not Found')) {
+                    throw error;
+                  }
+                })
+            );
+          } catch (e) {
+            console.log("ERROR: ", e)
+            if (!error.message.includes('Not Found')) {
+              throw error;
+            }
+          }
           await octokit.repos.createOrUpdateFileContents({
             owner: 'polarityio',
             repo: repoName,

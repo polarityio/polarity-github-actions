@@ -21,7 +21,7 @@ const main = async () => {
 
     const allOrgRepos = await getAllReposInOrg(octokit, orgId);
 
-    console.log('REPOS: ', JSON.stringify(allOrgRepos, null, 2))
+    console.log('REPOS: ', allOrgRepos)
     await uploadActions(octokit, allOrgRepos, actionFileNames);
     
   } catch (error) {
