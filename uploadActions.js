@@ -11,7 +11,7 @@ const REPO_BLOCK_LIST = [
 
 const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
   console.log('\nAction Files to Upload: ', actionFileNames, '\n');
-  console.log('\nREPOS???: ', actionFileNames, '\n');
+  console.log('\nREPOS???: ', allOrgRepos, '\n');
   const fileCreationFunctions = fp.flow(
     fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST)),
     fp.flatMap(({ name: repoName }) =>
