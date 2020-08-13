@@ -18,7 +18,7 @@ const getAllReposInOrg = async (octokit, orgId, pageNumber = 1, agg = []) => {
     return allReposInOrg;
   }
 
-  await getAllReposInOrg(octokit, orgId, pageNumber + 1, agg.concat(repos));
+  return await getAllReposInOrg(octokit, orgId, pageNumber + 1, agg.concat(repos));
 };
 
 module.exports = getAllReposInOrg;
