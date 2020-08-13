@@ -56,7 +56,7 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
         actionFileNames
       )
     )
-  )([{ name: 'testing-github-actions' }]);
+  )([{ name: 'flashpoint' }]);
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fn of fileCreationFunctions) {
