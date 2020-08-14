@@ -14,10 +14,14 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
 
   const fileCreationFunctions = fp.flow(
     fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST)),
-    fp.flatMap(
-      getDeployFunctionsForActionFilesByRepo(octokit, actionFileNames)
-    )
-  )(['discoverorg'].map((repoName) => ({ name: repoName })));
+    fp.flatMap(getDeployFunctionsForActionFilesByRepo(octokit, actionFileNames))
+  )(
+    [
+      'diablo3', //private
+      'flashpoint', //update
+      'zendesk' //public
+    ].map((repoName) => ({ name: repoName }))
+  );
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {
