@@ -17,19 +17,18 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
     fp.flatMap(getDeployFunctionsForActionFilesByRepo(octokit, actionFileNames))
   )(
     [
-      'farsight-dnsdb',
-      'gigamon',
-      'greynoise',
-      'fir-search',
-      'emailrep',
-      'domaintools-iris',
-      'ipinfo',
-      'passivetotal',
-      'pulsedive',
-      'recorded-future',
-      'reversinglabs',
-      'riskiq',
-      'sharepoint'
+      'x-force-exchange',
+      'thehive',
+      'idefense',
+      'alienvault-otx',
+      'resilient',
+      'cyber-risk-analytics',
+      'discoverorg',
+      'urlhaus',
+      'urlscan',
+      'threatconnect',
+      'crits',
+      'salesforce'
     ].map((repoName) => ({ name: repoName }))
   );
 
