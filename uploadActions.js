@@ -17,9 +17,19 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
     fp.flatMap(getDeployFunctionsForActionFilesByRepo(octokit, actionFileNames))
   )(
     [
-      'diablo3', //private
-      'flashpoint', //update
-      'zendesk' //public
+      'farsight-dnsdb',
+      'gigamon',
+      'greynoise',
+      'fir-search',
+      'emailrep',
+      'domaintools-iris',
+      'ipinfo',
+      'passivetotal',
+      'pulsedive',
+      'recorded-future',
+      'reversinglabs',
+      'riskiq',
+      'sharepoint'
     ].map((repoName) => ({ name: repoName }))
   );
 
