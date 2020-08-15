@@ -15,22 +15,7 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
   const fileCreationFunctions = fp.flow(
     fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST)),
     fp.flatMap(getDeployFunctionsForActionFilesByRepo(octokit, actionFileNames))
-  )(
-    [
-      'x-force-exchange',
-      'thehive',
-      'idefense',
-      'alienvault-otx',
-      'resilient',
-      'cyber-risk-analytics',
-      'discoverorg',
-      'urlhaus',
-      'urlscan',
-      'threatconnect',
-      'crits',
-      'salesforce'
-    ].map((repoName) => ({ name: repoName }))
-  );
+  )(['alienvault-otx', 'resilient'].map((repoName) => ({ name: repoName })));
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {
