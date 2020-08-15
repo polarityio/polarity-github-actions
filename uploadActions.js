@@ -6,7 +6,34 @@ const REPO_BLOCK_LIST = [
   'node-maxmind',
   'polarityio.github.io',
   'polarity-github-actions',
-  'polarity-integration-development-checklist'
+  'polarity-integration-development-checklist',
+  
+  // Ignoring these repos as have just recently deployed actions to them
+  'farsight-dnsdb',
+  'gigamon',
+  'greynoise',
+  'fir-search',
+  'emailrep',
+  'domaintools-iris',
+  'ipinfo',
+  'passivetotal',
+  'pulsedive',
+  'recorded-future',
+  'reversinglabs',
+  'riskiq',
+  'sharepoint',
+  'x-force-exchange',
+  'thehive',
+  'idefense',
+  'alienvault-otx',
+  'resilient',
+  'cyber-risk-analytics',
+  'discoverorg',
+  'urlhaus',
+  'urlscan',
+  'threatconnect',
+  'crits',
+  'salesforce'
 ];
 
 const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
@@ -15,7 +42,7 @@ const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
   const fileCreationFunctions = fp.flow(
     fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST)),
     fp.flatMap(getDeployFunctionsForActionFilesByRepo(octokit, actionFileNames))
-  )(['alienvault-otx', 'resilient'].map((repoName) => ({ name: repoName })));
+  )(allOrgRepos);
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {
