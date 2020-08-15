@@ -63,7 +63,42 @@ const REPO_BLOCK_LIST = [
   'google-maps',
   'virustotal',
   'poolparty',
-  'domain-tools'
+  'domain-tools',
+  'paloalto-autofocus',
+  'style-guide',
+  'epoch-time',
+  'confluence',
+  'reversinglabs-A1000',
+  'polarity-tags',
+  'swimlane',
+  'servicenow',
+  'zendesk',
+  'vulndb',
+  'jira',
+  'cybersponse',
+  'worldtradingdata',
+  'pastebin-dmps',
+  'area-codes',
+  'google-drive',
+  'decoder',
+  'screenshotmachine',
+  'ldap',
+  'snort-sig',
+  'hybrid-analysis',
+  'nexpose',
+  'windows-security-events',
+  'trustar',
+  'haveibeenpwnd',
+  'cisco-umbrella',
+  'abuseipdb',
+  'flashpoint',
+  'intel-471',
+  'redmine',
+  'google-translate',
+  'tenable-sc',
+  'redmine-issue-creator',
+  'majestic-million',
+  'cybereason'
 ];
 
 const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
@@ -84,7 +119,8 @@ const getDeployFunctionsForActionFilesByRepo = (octokit, actionFileNames) => ({
   name: repoName
 }) =>
   fp.map(
-    (actionFileName) => async () => {
+    (actionFileName, i) => async () => {
+      if( i === 0) console.log('repo: ', repoName)
       let existingFileSha = await getExistingFileShaHash(
         octokit,
         repoName,
