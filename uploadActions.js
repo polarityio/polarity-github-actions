@@ -120,7 +120,7 @@ const getDeployFunctionsForActionFilesByRepo = (octokit, actionFileNames) => ({
 }) =>
   fp.map(
     (actionFileName, i) => async () => {
-      if( i === 0) console.log('repo: ', repoName)
+      console.log('repo: ', repoName)
       let existingFileSha = await getExistingFileShaHash(
         octokit,
         repoName,
