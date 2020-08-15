@@ -33,12 +33,42 @@ const REPO_BLOCK_LIST = [
   'urlscan',
   'threatconnect',
   'crits',
-  'salesforce'
+  'salesforce',
+  'misp',
+  'arin',
+  'threatquotient',
+  'shodan',
+  'fullcontact',
+  'active-directory',
+  'qradar',
+  'diablo3',
+  'phantom',
+  'metadefender',
+  'postgresql',
+  'generic-rest-sample',
+  'google-safe-browsing',
+  'ups-tracking',
+  'sql-server-example',
+  'redis-example',
+  'carbon-black',
+  'maxmind',
+  'scoutprime',
+  'cve-search',
+  'staxx',
+  'elasticsearch',
+  'servicedesk-plus',
+  'threatstream',
+  'splunk',
+  'wikipedia',
+  'google-maps',
+  'virustotal',
+  'poolparty',
+  'domain-tools'
 ];
 
 const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
   console.log('\nAction Files to Upload: ', actionFileNames, '\n');
-
+  console.log('Org repos', fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST), allOrgRepos))
   const fileCreationFunctions = fp.flow(
     fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST)),
     fp.flatMap(getDeployFunctionsForActionFilesByRepo(octokit, actionFileNames))
