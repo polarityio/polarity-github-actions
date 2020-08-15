@@ -15,7 +15,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: npm install
+    - uses: actions/setup-node@v1
+    - name: NPM Install
+      id: npm-install
+      run: npm install
     - name: Polarity Integration Development Checklist
       id: int-dev-checklist
       uses: polarityio/polarity-integration-development-checklist@v1.0.0
