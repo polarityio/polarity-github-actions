@@ -68,9 +68,9 @@ const REPO_BLOCK_LIST = [
 
 const uploadActions = async (octokit, allOrgRepos, actionFileNames) => {
   console.log('\nAction Files to Upload: ', actionFileNames, '\n');
-  console.log('Org repos', fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST), allOrgRepos))
+  
   const fileCreationFunctions = fp.flow(
-    fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST)),
+    fp.filter((repo) => !fp.includes(repo.name, REPO_BLOCK_LIST) && !repo.archived),
     fp.flatMap(getDeployFunctionsForActionFilesByRepo(octokit, actionFileNames))
   )(allOrgRepos);
 
