@@ -7,6 +7,7 @@ const REPO_BLOCK_LIST = [
   'polarityio.github.io',
   'polarity-github-actions',
   'polarity-integration-development-checklist',
+  'securonix',
   
   // Ignoring these repos as have just recently deployed actions to them
   'farsight-dnsdb',
