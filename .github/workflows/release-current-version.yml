@@ -43,7 +43,7 @@ on:
         description: "The Node Version for the Polarity Elixir Server Version"
         required: false
         type: boolean
-        default: false
+        default: true
 
 jobs:
   OldNodePolarityServerRelease:
