@@ -30,7 +30,7 @@ on:
         type: string
         default: ubuntu-latest
       node-servers-container-version:
-        description: "The Container for both the Old and New Polarity Node Servers"
+        description: "The Container Version for both the Old and New Polarity Node Servers"
         required: false
         type: string
         default: centos:7
@@ -39,7 +39,11 @@ on:
         required: false
         type: string
         default: ubuntu-20.04
-      # use-integration-development-checklist
+      use-integration-development-checklist:
+        description: "The Node Version for the Polarity Elixir Server Version"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   OldNodePolarityServerRelease:
@@ -63,6 +67,7 @@ jobs:
         mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.old-node-server-node-version }}.tgz" ${{ github.event.repository.name }} &&
         cd ${{ github.event.repository.name }}
     - name: Polarity Integration Development Checklist
+      if: ${{!inputs.use-integration-development-checklist}}
       id: int-dev-checklist
       uses: polarityio/polarity-integration-development-checklist@master
       with:
