@@ -67,7 +67,7 @@ jobs:
         mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.old-node-server-node-version }}.tgz" ${{ github.event.repository.name }} &&
         cd ${{ github.event.repository.name }}
     - name: Polarity Integration Development Checklist
-      if: ${{!inputs.use-integration-development-checklist}}
+      if: ${{inputs.use-integration-development-checklist}}
       id: int-dev-checklist
       uses: polarityio/polarity-integration-development-checklist@master
       with:
