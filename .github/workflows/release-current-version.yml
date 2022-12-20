@@ -116,7 +116,7 @@ jobs:
         path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.new-node-server-node-version }}.tgz
   
   ElixirPolarityServerRelease:
-    runs-on: ${{ elixir-server-os-version }}
+    runs-on: ${{ inputs.elixir-server-os-version }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v3
