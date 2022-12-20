@@ -9,7 +9,7 @@ on:
   workflow_call:
     inputs:
       old-node-server-node-version:
-        description: "The Node Version for the Oldest Supported Server Version"
+        description: "The Node Version for the Oldest Supported Polarity Server Version"
         required: false
         type: string
         default: 12.22.12
@@ -61,7 +61,7 @@ jobs:
         name: oldPolarityNodeServerReleaseZip
         path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.old-node-server-node-version }}.tgz
 
-  NewPolarityNodeServerRelease:
+  NewNodePolarityServerRelease:
     runs-on: ubuntu-latest
     container: 'centos:7'
     steps:
@@ -95,7 +95,7 @@ jobs:
         name: newPolarityNodeServerReleaseZip
         path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-14.21.1.tgz
   
-  ElixirServerRelease:
+  ElixirPolarityServerRelease:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
@@ -130,7 +130,7 @@ jobs:
 
   create-releases:
     runs-on: ubuntu-latest
-    needs: [ReleaseForOldNodePolarityServerRelease, NewPolarityNodeServerRelease, ElixirServerRelease]
+    needs: [OldNodePolarityServerRelease, NewNodePolarityServerRelease, ElixirPolarityServerRelease]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v3
@@ -266,7 +266,7 @@ jobs:
         asset_name: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-14.21.1.tgz
         asset_content_type: application/gzip
     
-  UploadElixirServerReleaseAsset:
+  UploadElixirPolarityServerReleaseAsset:
     runs-on: ubuntu-latest
     needs: create-releases
     steps:
