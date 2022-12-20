@@ -9,22 +9,42 @@ on:
   workflow_call:
     inputs:
       old-node-server-node-version:
-        description: "The Node Version for the Oldest Supported Polarity Server Version"
+        description: "The Node Version for the Oldest Supported Polarity Node Server Version"
         required: false
         type: string
         default: 12.22.12
-      
-      # old-node-server-node-version
-      # new-node-server-node-version
-      # elixir-server-node-version
-      # node-servers-os-version
-      # elixir-server-os-version
+      new-node-server-node-version:
+        description: "The Node Version for the Newest Supported Polarity Node Server Version"
+        required: false
+        type: string
+        default: 14.21.1
+      elixir-server-node-version:
+        description: "The Node Version for the Polarity Elixir Server Version"
+        required: false
+        type: string
+        default: 18.12.1
+
+      node-servers-os-version:
+        description: "The Operating System for both the Old and New Polarity Node Servers"
+        required: false
+        type: string
+        default: ubuntu-latest
+      node-servers-container-version:
+        description: "The Container for both the Old and New Polarity Node Servers"
+        required: false
+        type: string
+        default: centos:7
+      elixir-server-os-version:
+        description: "The Node Version for the Polarity Elixir Server Version"
+        required: false
+        type: string
+        default: ubuntu-20.04
       # use-integration-development-checklist
 
 jobs:
   OldNodePolarityServerRelease:
-    runs-on: ubuntu-latest
-    container: 'centos:7'
+    runs-on: ${{ inputs.node-servers-os-version }}
+    container: ${{ inputs.node-servers-container-version }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v3
@@ -62,13 +82,13 @@ jobs:
         path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.old-node-server-node-version }}.tgz
 
   NewNodePolarityServerRelease:
-    runs-on: ubuntu-latest
-    container: 'centos:7'
+    runs-on: ${{ inputs.node-servers-os-version }}
+    container: ${{ inputs.node-servers-container-version }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v3
       with:
-        node-version: 14.21.1
+        node-version: ${{ inputs.new-node-server-node-version }}
     - name: Get NPM Version
       id: package-version
       uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
@@ -77,9 +97,9 @@ jobs:
       run: |
         npm ci &&
         cd .. && 
-        tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-14.21.1.tgz" "./${{ github.event.repository.name }}" &&  
-        echo "::set-output name=build_hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-14.21.1.tgz' | grep -oE '^[^ ]*' )" &&
-        mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-14.21.1.tgz" ${{ github.event.repository.name }} &&
+        tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.new-node-server-node-version }}.tgz" "./${{ github.event.repository.name }}" &&  
+        echo "::set-output name=build_hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.new-node-server-node-version }}.tgz' | grep -oE '^[^ ]*' )" &&
+        mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.new-node-server-node-version }}.tgz" ${{ github.event.repository.name }} &&
         cd ${{ github.event.repository.name }}
     - name: Adding SHA256 Hash For Release
       run: |
@@ -93,15 +113,15 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: newPolarityNodeServerReleaseZip
-        path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-14.21.1.tgz
+        path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.new-node-server-node-version }}.tgz
   
   ElixirPolarityServerRelease:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ elixir-server-os-version }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v3
       with:
-        node-version: 18.12.1
+        node-version: ${{ inputs.elixir-server-node-version }}
     - name: Get NPM Version
       id: package-version
       uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
@@ -110,9 +130,9 @@ jobs:
       run: |
         npm ci &&
         cd .. && 
-        tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-18.12.1.tgz" "./${{ github.event.repository.name }}" &&  
-        echo "::set-output name=build_hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-18.12.1.tgz' | grep -oE '^[^ ]*' )" &&
-        mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-18.12.1.tgz" ${{ github.event.repository.name }} &&
+        tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.elixir-server-node-version }}.tgz" "./${{ github.event.repository.name }}" &&  
+        echo "::set-output name=build_hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.elixir-server-node-version }}.tgz' | grep -oE '^[^ ]*' )" &&
+        mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.elixir-server-node-version }}.tgz" ${{ github.event.repository.name }} &&
         cd ${{ github.event.repository.name }}
     - name: Adding SHA256 Hash For Release
       run: |
@@ -126,7 +146,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: elixirPolarityServerReleaseZip
-        path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-18.12.1.tgz
+        path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.elixir-server-node-version }}.tgz
 
   BuildReleaseAssetsAndCreateRelease:
     runs-on: ubuntu-latest
@@ -182,11 +202,11 @@ jobs:
           SHA256: ${{ env.oldPolarityNodeServerReleaseSHA256Hash }}
 
           **Polarity Server 4.3.x**
-          - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-14.21.1.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-14.21.1.tgz)
+          - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.new-node-server-node-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.new-node-server-node-version }}.tgz)
           SHA256: ${{ env.newPolarityNodeServerReleaseSHA256Hash }}
 
           **Polarity Server 5.x**
-          - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-18.12.1.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-18.12.1.tgz)
+          - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.elixir-server-node-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.elixir-server-node-version }}.tgz)
           SHA256: ${{ env.elixirPolarityServerReleaseSHA256Hash }}
         draft: false
         prerelease: false
@@ -262,8 +282,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ env.newReleaseAssetUploadUrl }} 
-        asset_path: ./${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-14.21.1.tgz
-        asset_name: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-14.21.1.tgz
+        asset_path: ./${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.new-node-server-node-version }}.tgz
+        asset_name: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.new-node-server-node-version }}.tgz
         asset_content_type: application/gzip
     
   UploadElixirPolarityServerReleaseAsset:
@@ -295,6 +315,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ env.newReleaseAssetUploadUrl }} 
-        asset_path: ./${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-18.12.1.tgz
-        asset_name: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-18.12.1.tgz
+        asset_path: ./${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.elixir-server-node-version }}.tgz
+        asset_name: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.elixir-server-node-version }}.tgz
         asset_content_type: application/gzip
