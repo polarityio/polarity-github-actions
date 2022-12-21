@@ -189,9 +189,12 @@ jobs:
         echo "elixirPolarityServerReleaseSHA256Hash=$value" >> $GITHUB_ENV
 
     - name: Getting Git Commit Logs Since Last Release
-      id: get-commit-logs
       run: |
-        echo "commitLogs=`git log $(git describe --tags --abbrev=0)..HEAD --oneline | cat | awk '{print "-", $2}'`" >> $GITHUB_ENV
+        echo "`git log $(git describe --tags --abbrev=0)..HEAD --oneline | cat | awk '{print "-", $2}'`" > commitLogs.txt
+    - name: Add commitLogs to ENV for use
+      run: |
+        value=`cat commitLogs.txt`
+        echo "commitLogs=$value" >> $GITHUB_ENV
 
     - name: Create Versioned Release
       id: create-versioned-release
