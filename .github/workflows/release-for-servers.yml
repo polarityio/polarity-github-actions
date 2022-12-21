@@ -190,13 +190,16 @@ jobs:
 
     - name: Getting Git Commit Logs Since Last Release
       run: |
-        pwd && ls -la &&
         echo "`git log $(git tag -l | cat | tail -1)..HEAD --oneline | cat | awk '{print "-", $2}'`" > commitLogs.txt
     - name: Add commitLogs to ENV for use
       run: |
         value=`cat commitLogs.txt`
-        echo "commitLogs=$value" >> $GITHUB_ENV
-
+        echo "commitLogs="$value"" >> $GITHUB_ENV
+    - name: test
+      run: |
+        echo `cat commitLogs.txt`
+        echo "${{ env.commitLogs }}"
+        ls -la
     - name: Create Versioned Release
       id: create-versioned-release
       uses: softprops/action-gh-release@v1
