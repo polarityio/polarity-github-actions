@@ -191,7 +191,7 @@ jobs:
     - name: Getting Git Commit Logs Since Last Release
       run: |
         pwd && ls -la &&
-        echo "`git log $(git describe --tags --abbrev=0)..HEAD --oneline | cat | awk '{print "-", $2}'`" > commitLogs.txt
+        echo "`git log $(git tag -l | cat | tail -1)..HEAD --oneline | cat | awk '{print "-", $2}'`" > commitLogs.txt
     - name: Add commitLogs to ENV for use
       run: |
         value=`cat commitLogs.txt`
