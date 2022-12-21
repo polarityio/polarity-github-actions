@@ -58,12 +58,12 @@ jobs:
       id: package-version
       uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
     - name: Create Build
-      id: create_build
+      id: create-build
       run: |
         npm ci &&
         cd .. && 
         tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.old-node-server-node-version }}.tgz" "./${{ github.event.repository.name }}" &&  
-        echo "::set-output name=build_hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.old-node-server-node-version }}.tgz' | grep -oE '^[^ ]*' )" &&
+        echo "::set-output name=build-hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.old-node-server-node-version }}.tgz' | grep -oE '^[^ ]*' )" &&
         mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.old-node-server-node-version }}.tgz" ${{ github.event.repository.name }} &&
         cd ${{ github.event.repository.name }}
     - name: Polarity Integration Development Checklist
@@ -74,7 +74,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Adding SHA256 Hash For Old Polarity Node Server Release
       run: |
-        echo "${{ steps.create_build.outputs.build_hash }}" > oldPolarityNodeServerReleaseSHA256Hash.txt
+        echo "${{ steps.create-build.outputs.build-hash }}" > oldPolarityNodeServerReleaseSHA256Hash.txt
     - name: Upload oldPolarityNodeServerReleaseSHA256Hash
       uses: actions/upload-artifact@v3
       with:
@@ -98,17 +98,17 @@ jobs:
       id: package-version
       uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
     - name: Create Build
-      id: create_build
+      id: create-build
       run: |
         npm ci &&
         cd .. && 
         tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.new-node-server-node-version }}.tgz" "./${{ github.event.repository.name }}" &&  
-        echo "::set-output name=build_hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.new-node-server-node-version }}.tgz' | grep -oE '^[^ ]*' )" &&
+        echo "::set-output name=build-hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.new-node-server-node-version }}.tgz' | grep -oE '^[^ ]*' )" &&
         mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.new-node-server-node-version }}.tgz" ${{ github.event.repository.name }} &&
         cd ${{ github.event.repository.name }}
     - name: Adding SHA256 Hash For Release
       run: |
-        echo "${{ steps.create_build.outputs.build_hash }}" > newPolarityNodeServerReleaseSHA256Hash.txt
+        echo "${{ steps.create-build.outputs.build-hash }}" > newPolarityNodeServerReleaseSHA256Hash.txt
     - name: Upload newPolarityNodeServerReleaseSHA256Hash
       uses: actions/upload-artifact@v3
       with:
@@ -131,17 +131,17 @@ jobs:
       id: package-version
       uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
     - name: Create Build
-      id: create_build
+      id: create-build
       run: |
         npm ci &&
         cd .. && 
         tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.elixir-server-node-version }}.tgz" "./${{ github.event.repository.name }}" &&  
-        echo "::set-output name=build_hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.elixir-server-node-version }}.tgz' | grep -oE '^[^ ]*' )" &&
+        echo "::set-output name=build-hash::$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.elixir-server-node-version }}.tgz' | grep -oE '^[^ ]*' )" &&
         mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.elixir-server-node-version }}.tgz" ${{ github.event.repository.name }} &&
         cd ${{ github.event.repository.name }}
     - name: Adding SHA256 Hash For Release
       run: |
-        echo "${{ steps.create_build.outputs.build_hash }}" > elixirPolarityServerReleaseSHA256Hash.txt
+        echo "${{ steps.create-build.outputs.build-hash }}" > elixirPolarityServerReleaseSHA256Hash.txt
     - name: Upload elixirPolarityServerReleaseSHA256Hash
       uses: actions/upload-artifact@v3
       with:
@@ -188,17 +188,22 @@ jobs:
         value=`cat elixirPolarityServerReleaseSHA256Hash.txt`
         echo "elixirPolarityServerReleaseSHA256Hash=$value" >> $GITHUB_ENV
 
+    - name: Getting Git Commit Logs Since Last Release
+      id: get-commit-logs
+      run: |
+        echo "::set-output name=commit-logs::$(git log $(git describe --tags --abbrev=0)..HEAD --oneline | cat | awk '{print "- ", $2}')"
+        
     - name: Create Versioned Release
-      id: create_versioned_release
+      id: create-versioned-release
       uses: softprops/action-gh-release@v1
-      # env:
-      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{steps.package-version.outputs.current-version}}
         release_name: ${{steps.package-version.outputs.current-version}}
         body: |
-          
-          # Downloads
+          ## Release Notes
+          ${{ steps.get-commit-logs.outputs.commit-logs  }}
+
+          ## Downloads
 
           **Polarity Server 4.2.x**
           - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.old-node-server-node-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.old-node-server-node-version }}.tgz)
@@ -219,7 +224,7 @@ jobs:
 
     - name: Add Release Url for Next Jobs
       run: |
-        echo "${{ steps.create_versioned_release.outputs.upload_url }}" > newReleaseAssetUploadUrl.txt
+        echo "${{ steps.create-versioned-release.outputs.upload_url }}" > newReleaseAssetUploadUrl.txt
     - name: Upload newReleaseAssetUploadUrl
       uses: actions/upload-artifact@v3
       with:
