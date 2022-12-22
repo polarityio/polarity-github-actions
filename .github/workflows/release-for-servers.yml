@@ -196,7 +196,9 @@ jobs:
     - name: Add commitLogs to ENV for use
       run: |
         value="$(cat commitLogs.txt)"
-        echo "commitLogs="$value"" >> $GITHUB_ENV
+        echo "value<<EOF" >> $GITHUB_ENV
+        echo "$value" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
     - name: Create Versioned Release
       id: create-versioned-release
       uses: softprops/action-gh-release@v1
