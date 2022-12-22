@@ -12,17 +12,17 @@ on:
         description: "The Node Version for the Oldest Supported Polarity Node Server Version"
         required: false
         type: string
-        default: 12.22.12
+        default: "12"
       new-node-server-node-version:
         description: "The Node Version for the Newest Supported Polarity Node Server Version"
         required: false
         type: string
-        default: 14.21.1
+        default: "14"
       elixir-server-node-version:
         description: "The Node Version for the Polarity Elixir Server Version"
         required: false
         type: string
-        default: 18.12.1
+        default: "18"
 
       node-servers-os-version:
         description: "The Operating System for both the Old and New Polarity Node Servers"
