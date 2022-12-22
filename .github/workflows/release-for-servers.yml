@@ -195,9 +195,9 @@ jobs:
         echo "$(git log $(git tag -l | cat | tail -1)..HEAD --oneline | cat | awk '{print "-", $2}')" > commitLogs.txt
     - name: Add commitLogs to ENV for use
       run: |
-        value="$(cat commitLogs.txt)"
-        echo "value<<EOF" >> $GITHUB_ENV
-        echo "$value" >> $GITHUB_ENV
+        commitLogs=$(cat commitLogs.txt)
+        echo "commitLogs<<EOF" >> $GITHUB_ENV
+        echo "$commitLogs" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
     - name: Create Versioned Release
       id: create-versioned-release
