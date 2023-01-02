@@ -9,10 +9,7 @@ const {
 const createAndUploadConfigJson = async (
   octokit,
   orgId,
-  allOrgRepos = [
-    // 'test-int-for-actions',
-    { name: 'testing-github-actions' }
-  ]
+  allOrgRepos
 ) => {
   console.log('\nUploading config.json \n');
 
