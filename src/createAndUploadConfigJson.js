@@ -71,6 +71,7 @@ const getConfigContentAndCreateJsonVersion =
       });
       console.log(`- Config.json Upload Success: ${repoName}`);
     } catch (error) {
+      console.log(`- Config.json Upload Failed: ${repoName}`);
       console.log({ repoName, err: parseErrorToReadableJSON(error) });
     }
   };
