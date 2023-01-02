@@ -6,13 +6,7 @@ const {
   parseErrorToReadableJSON
 } = require('./dataTransformations');
 
-const createAndUploadConfigJson = async (
-  octokit,
-  orgId,
-  allOrgRepos
-) => {
-  console.log('\nUploading config.json \n');
-
+const createAndUploadConfigJson = async (octokit, orgId, allOrgRepos) => {
   const fileCreationFunctions = flow(
     filter(
       (repo) =>
@@ -22,6 +16,8 @@ const createAndUploadConfigJson = async (
     ),
     map(getConfigContentAndCreateJsonVersion(octokit, orgId))
   )(allOrgRepos);
+
+  if (size(fileCreationFunctions)) console.log('\nUploading config.json');
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {
@@ -51,6 +47,15 @@ const getConfigContentAndCreateJsonVersion =
         replace('module.exports = ', 'configJsContents = '),
         eval
       )(configJsContents);
+      configJsContents = size(configJsContents.customTypes)
+        ? {
+            ...configJsContents,
+            customTypes: map(
+              (customType) => ({ ...customType, regex: customType.regex.toString() }),
+              configJsContents.customTypes
+            )
+          }
+        : configJsContents;
       configJsContents = encodeBase64(JSON.stringify(configJsContents, null, 2));
 
       await octokit.repos.createOrUpdateFileContents({
