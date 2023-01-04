@@ -69,7 +69,7 @@ jobs:
       - name: Polarity Integration Development Checklist
         if: ${{inputs.use-integration-development-checklist}}
         id: int-dev-checklist
-        uses: polarityio/polarity-integration-development-checklist@master
+        uses: polarityio/polarity-integration-development-checklist@main
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Adding SHA256 Hash For Old Polarity Node Server Release
