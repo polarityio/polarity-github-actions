@@ -44,7 +44,7 @@ const getExistingFileShaHash = async (octokit, orgId, repoName, actionFileName) 
       .getContent({
         owner: orgId,
         repo: repoName,
-        branch: 'develop',
+        ref: 'develop',
         path: `.github/workflows/${actionFileName}`
       })
       .catch((error) => {
@@ -58,10 +58,11 @@ const uploadActionFile = (octokit, orgId, repoName, actionFileName, existingFile
   octokit.repos.createOrUpdateFileContents({
     owner: orgId,
     repo: repoName,
-    path: `.github/workflows/${actionFileName}`,
-    message: `Uploading Github Action: ${actionFileName}`,
     branch: 'develop',
+    path: `.github/workflows/${actionFileName}`,
     ...(existingFileSha && { sha: existingFileSha }),
+
+    message: `Uploading Github Action: ${actionFileName}`,
     content: fs.readFileSync(`./src/${actionFileName}`, 'base64'),
     committer: {
       name: orgId,

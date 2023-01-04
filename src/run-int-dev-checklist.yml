@@ -22,6 +22,6 @@ jobs:
         npm ci
     - name: Polarity Integration Development Checklist
       id: int-dev-checklist
-      uses: polarityio/polarity-integration-development-checklist@master
+      uses: polarityio/polarity-integration-development-checklist@main
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
