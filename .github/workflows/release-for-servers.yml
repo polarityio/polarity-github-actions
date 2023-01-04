@@ -246,6 +246,6 @@ jobs:
             ./${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.elixir-server-node-version }}.tgz
           draft: false
           prerelease: false
-          generate_release_notes: true
+          generate_release_notes: false
           append_body: true
           token: ${{ secrets.GITHUB_TOKEN }}
