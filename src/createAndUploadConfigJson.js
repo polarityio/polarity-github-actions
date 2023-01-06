@@ -26,6 +26,7 @@ const createAndUploadConfigJson = async (octokit, orgId, allOrgRepos) => {
     ),
     map(getConfigContentAndCreateJsonVersion(octokit, orgId))
   )(allOrgRepos);
+    console.log('Should log this as well');
 
   if (size(fileCreationFunctions)) console.log('\nUploading config.json');
 
@@ -52,6 +53,7 @@ const getConfigContentAndCreateJsonVersion =
       if (!size(configJsContents)) return;
 
       const configJsonContent = createConfigJsonContent(configJsContents);
+    console.log('Should log this also', configJsonContent);
 
       await octokit.repos.createOrUpdateFileContents({
         owner: orgId,
@@ -92,7 +94,7 @@ const createConfigJsonContent = (configJsContents) => {
   const formattedCustomTypes = size(configJsJsonContent.customTypes) && {
     customTypes: map(transformRegexForJSON, configJsJsonContent.customTypes)
   };
-  
+
   const configJsonJsContent = {
     ...configJsJsonContent,
     entityTypes: entityTypesWithCorrectCasing,
