@@ -7,7 +7,8 @@ const {
   includes,
   map,
   split,
-  reduce
+  reduce,
+  compact
 } = require('lodash/fp');
 const { REPO_BLOCK_LIST, CONFIG_JSON_REPO_BLOCK_LIST } = require('./constants');
 const {
