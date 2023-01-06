@@ -86,38 +86,40 @@ const createConfigJsonContent = (configJsContents) => {
   )(configJsContents);
 
   const entityTypesWithCorrectCasing = compact(
-    map(
-      (entityType) =>
-        get(toLower(entityType), {
-          hash: 'hash',
-          md5: 'MD5',
-          sha1: 'SHA1',
-          sha256: 'SHA256',
-          ipv4: 'IPv4',
-          ipv4cidr: 'IPv4CIDR',
-          ipv6: 'IPv6',
-          cve: 'cve',
-          string: 'string',
-          url: 'url',
-          domain: 'domain',
-          email: 'email',
-          '*': '*'
-        }),
-      configJsJsonContent.entityTypes
-    )
+    map(getCorrectEntityTypeCasing, configJsJsonContent.entityTypes)
   );
 
+  const formattedCustomTypes = size(configJsJsonContent.customTypes) && {
+    customTypes: map(transformRegexForJSON, configJsJsonContent.customTypes)
+  };
+  
   const configJsonJsContent = {
     ...configJsJsonContent,
     entityTypes: entityTypesWithCorrectCasing,
-    ...(size(configJsJsonContent.customTypes) && {
-      customTypes: map(transformRegexForJSON, configJsJsonContent.customTypes)
-    })
+    ...formattedCustomTypes
   };
+
   const configJsonContent = encodeBase64(JSON.stringify(configJsonJsContent, null, 2));
 
   return configJsonContent;
 };
+
+const getCorrectEntityTypeCasing = (entityType) =>
+  get(toLower(entityType), {
+    hash: 'hash',
+    md5: 'MD5',
+    sha1: 'SHA1',
+    sha256: 'SHA256',
+    ipv4: 'IPv4',
+    ipv4cidr: 'IPv4CIDR',
+    ipv6: 'IPv6',
+    cve: 'cve',
+    string: 'string',
+    url: 'url',
+    domain: 'domain',
+    email: 'email',
+    '*': '*'
+  });
 
 const transformRegexForJSON = (customType) => {
   const regexString = customType.regex.toString();
