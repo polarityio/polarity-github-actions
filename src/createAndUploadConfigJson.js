@@ -25,7 +25,7 @@ const createAndUploadConfigJson = async (octokit, orgId, allOrgRepos) => {
     map(getConfigContentAndCreateJsonVersion(octokit, orgId))
   )(allOrgRepos);
 
-  if (size(fileCreationFunctions)) console.info('\nUploading config.json');
+  if (size(fileCreationFunctions)) console.info('\nStarting Upload of All `config.json` Files');
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {
@@ -67,7 +67,9 @@ const getConfigContentAndCreateJsonVersion =
           email: 'info@polarity.io'
         }
       });
-      console.info(`- Config.json Upload Success: ${repoName}`);
+      console.info(
+        `- Config.json Upload Success: ${repoName}  (https://github.com/polarityio/${repoName}/blob/develop/config/config.json)`
+      );
     } catch (error) {
       console.info(`- Config.json Upload Failed: ${repoName}`);
       console.info({ repoName, err: parseErrorToReadableJSON(error) });

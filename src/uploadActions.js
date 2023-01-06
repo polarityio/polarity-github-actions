@@ -2,7 +2,7 @@ const fs = require('fs');
 const { flatMap, map, get } = require('lodash/fp');
 
 const uploadActions = async (octokit, orgId, allOrgRepos, actionFileNames) => {
-  console.info('\nAction Files to Upload: ', actionFileNames, '\n');
+  console.info('Action Files to Upload: ', actionFileNames, '\n');
 
   const fileCreationFunctions = flatMap(
     getDeployFunctionsForActionFilesByRepo(octokit, orgId, actionFileNames),
@@ -29,7 +29,9 @@ const getDeployFunctionsForActionFilesByRepo =
 
         await uploadActionFile(octokit, orgId, repoName, actionFileName, existingFileSha);
 
-        console.info(`- Action Upload Success: ${repoName} <- ${actionFileName}`);
+        console.info(
+          `- Action Upload Success: ${repoName} <- ${actionFileName}  (https://github.com/polarityio/${repoName}/blob/develop/.github/workflows/${actionFileName})`
+        );
       },
       actionFileNames
     );

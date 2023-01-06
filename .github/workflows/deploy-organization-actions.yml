@@ -3,7 +3,7 @@ name: Deploy Organization Actions
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ master ]
 
 jobs:
   deploy-organization-actions:
@@ -21,6 +21,3 @@ jobs:
           run-int-dev-checklist.yml
           release-current-version.yml
         GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
-        repository_names_for_testing: |
-          testing-github-actions
-          test-int-for-actions
