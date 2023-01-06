@@ -3,7 +3,7 @@ const { REPO_BLOCK_LIST } = require('./constants');
 const { filter, flow, includes, flatMap, map, get } = require('lodash/fp');
 
 const uploadActions = async (octokit, orgId, allOrgRepos, actionFileNames) => {
-  console.log('\nAction Files to Upload: ', actionFileNames, '\n');
+  console.info('\nAction Files to Upload: ', actionFileNames, '\n');
   
   const fileCreationFunctions = flow(
     filter(
@@ -32,7 +32,7 @@ const getDeployFunctionsForActionFilesByRepo =
 
         await uploadActionFile(octokit, orgId, repoName, actionFileName, existingFileSha);
 
-        console.log(`- Action Upload Success: ${repoName} <- ${actionFileName}`);
+        console.info(`- Action Upload Success: ${repoName} <- ${actionFileName}`);
       },
       actionFileNames
     );

@@ -8,7 +8,7 @@ const createAndUploadConfigJson = require('./src/createAndUploadConfigJson');
 
 const main = async () => {
   try {
-    console.log('Starting Deploy Organization Actions...\n');
+    console.info('Starting Deploy Organization Actions...\n');
     const orgId = core.getInput('org_id');
     const actionFileNames = flow(
       core.getInput,
@@ -26,6 +26,7 @@ const main = async () => {
       { name: 'test-int-for-actions' }
     ];
 
+    console.info('Should log this too')
     // await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
 
     await createAndUploadConfigJson(octokit, orgId, allOrgRepos);

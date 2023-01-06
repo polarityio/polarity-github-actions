@@ -13,7 +13,7 @@ const getAllReposInOrg = async (octokit, orgId, pageNumber = 1, agg = []) => {
 
   if (repos.length < 100) {
     const allReposInOrg = agg.concat(repos);
-    console.log('Number of Repos Found: ', allReposInOrg.length);
+    console.info('Number of Repos Found: ', allReposInOrg.length);
 
     return allReposInOrg;
   }
