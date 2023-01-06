@@ -135,8 +135,8 @@ const transformRegexForJSON = (customType) => {
   };
 
   const regexModifiers = flow(
-    split,
     first,
+    split(''),
     reduce(
       (agg, modifierCharacter) => ({
         ...agg,
