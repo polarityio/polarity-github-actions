@@ -20,9 +20,13 @@ const main = async () => {
 
     const octokit = github.getOctokit(token);
 
-    const allOrgRepos = await getAllReposInOrg(octokit, orgId);
+    // const allOrgRepos = await getAllReposInOrg(octokit, orgId);
+    const allOrgRepos = [
+      { name: 'testing-github-actions' },
+      { name: 'test-int-for-actions' }
+    ];
 
-    await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
+    // await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
 
     await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
   } catch (error) {
