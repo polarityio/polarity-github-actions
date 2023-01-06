@@ -1,4 +1,14 @@
-const { size, get, flow, replace, filter, includes, map } = require('lodash/fp');
+const {
+  size,
+  get,
+  flow,
+  replace,
+  filter,
+  includes,
+  map,
+  split,
+  reduce
+} = require('lodash/fp');
 const { REPO_BLOCK_LIST, CONFIG_JSON_REPO_BLOCK_LIST } = require('./constants');
 const {
   decodeBase64,
@@ -41,22 +51,7 @@ const getConfigContentAndCreateJsonVersion =
       );
       if (!size(configJsContents)) return;
 
-      configJsContents = flow(
-        replace(/\n/g, ''),
-        decodeBase64,
-        replace('module.exports = ', 'configJsContents = '),
-        eval
-      )(configJsContents);
-      configJsContents = size(configJsContents.customTypes)
-        ? {
-            ...configJsContents,
-            customTypes: map(
-              (customType) => ({ ...customType, regex: customType.regex.toString() }),
-              configJsContents.customTypes
-            )
-          }
-        : configJsContents;
-      configJsContents = encodeBase64(JSON.stringify(configJsContents, null, 2));
+      const configJsonContent = createConfigJsonContent(configJsContents);
 
       await octokit.repos.createOrUpdateFileContents({
         owner: orgId,
@@ -64,7 +59,7 @@ const getConfigContentAndCreateJsonVersion =
         path: 'config/config.json',
         message: 'Adding config.json',
         branch: 'develop',
-        content: configJsContents,
+        content: configJsonContent,
         committer: {
           name: orgId,
           email: 'info@polarity.io'
@@ -80,5 +75,78 @@ const getConfigContentAndCreateJsonVersion =
       console.log({ repoName, err: parseErrorToReadableJSON(error) });
     }
   };
+
+const createConfigJsonContent = (configJsContents) => {
+  let configJsJsonContent;
+  configJsJsonContent = flow(
+    replace(/\n/g, ''),
+    decodeBase64,
+    replace('module.exports = ', 'configJsJsonContent = '),
+    eval
+  )(configJsContents);
+
+  const entityTypesWithCorrectCasing = compact(
+    map(getCorrectEntityTypeCasing, configJsJsonContent.entityTypes)
+  );
+
+  const formattedCustomTypes = size(configJsJsonContent.customTypes) && {
+    customTypes: map(transformRegexForJSON, configJsJsonContent.customTypes)
+  };
+  
+  const configJsonJsContent = {
+    ...configJsJsonContent,
+    entityTypes: entityTypesWithCorrectCasing,
+    ...formattedCustomTypes
+  };
+
+  const configJsonContent = encodeBase64(JSON.stringify(configJsonJsContent, null, 2));
+
+  return configJsonContent;
+};
+
+const getCorrectEntityTypeCasing = (entityType) =>
+  get(toLower(entityType), {
+    hash: 'hash',
+    md5: 'MD5',
+    sha1: 'SHA1',
+    sha256: 'SHA256',
+    ipv4: 'IPv4',
+    ipv4cidr: 'IPv4CIDR',
+    ipv6: 'IPv6',
+    cve: 'cve',
+    string: 'string',
+    url: 'url',
+    domain: 'domain',
+    email: 'email',
+    '*': '*'
+  });
+
+const transformRegexForJSON = (customType) => {
+  const regexString = customType.regex.toString();
+
+  const unwrappedRegexString = replace(/([^\/]+$)/, '', regexString).slice(1, -1);
+
+  const modCharToFlag = {
+    g: { isGlobal: true },
+    i: { isCaseSensitive: false }
+  };
+
+  const regexModifiers = flow(
+    split,
+    reduce(
+      (agg, modifierCharacter) => ({
+        ...agg,
+        ...modCharToFlag[modifierCharacter]
+      }),
+      {}
+    )
+  )(regexString.match(/([^\/]+$)/));
+
+  return {
+    ...customType,
+    regex: unwrappedRegexString,
+    ...regexModifiers
+  };
+};
 
 module.exports = createAndUploadConfigJson;
