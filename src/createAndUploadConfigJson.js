@@ -9,7 +9,8 @@ const {
   split,
   reduce,
   compact,
-  toLower
+  toLower,
+  first
 } = require('lodash/fp');
 const { REPO_BLOCK_LIST, CONFIG_JSON_REPO_BLOCK_LIST } = require('./constants');
 const {
@@ -135,6 +136,7 @@ const transformRegexForJSON = (customType) => {
 
   const regexModifiers = flow(
     split,
+    first,
     reduce(
       (agg, modifierCharacter) => ({
         ...agg,
