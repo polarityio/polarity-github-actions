@@ -127,8 +127,6 @@ const getCorrectEntityTypeCasing = (entityType) =>
 const transformRegexForJSON = (customType) => {
   const regexString = customType.regex.toString();
 
-  const unwrappedRegexString = replace(/([^\/]+$)/, '', regexString).slice(1, -1);
-
   const modCharToFlag = {
     g: { isGlobal: true },
     i: { isCaseSensitive: false }
@@ -145,6 +143,8 @@ const transformRegexForJSON = (customType) => {
       {}
     )
   )(regexString.match(/([^\/]+$)/));
+
+  const unwrappedRegexString = replace(/([^\/]+$)/, '', regexString).slice(1, -1);
 
   return {
     ...customType,
