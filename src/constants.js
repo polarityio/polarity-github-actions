@@ -1,7 +1,7 @@
 // Non-Integration Repo Names
 const REPO_BLOCK_LIST = [
-  'testing-github-actions',
-  'test-int-for-actions',
+  // 'testing-github-actions',
+  // 'test-int-for-actions',
   'reference-channels',
   'node-maxmind',
   'polarityio.github.io',

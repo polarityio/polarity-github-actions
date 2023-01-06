@@ -26,7 +26,6 @@ const main = async () => {
       { name: 'test-int-for-actions' }
     ];
 
-    console.info('Should log this too')
     // await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
 
     await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
