@@ -1,29 +1,25 @@
 # This workflow will run on merge of a PR or push to master
 # This repo contains all of our Github Actions we want to use in our Organization and the ability to publish them to all repos in the Organization.
 
-
 name: Deploy Organization Actions
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ master ]
 
 jobs:
   deploy-organization-actions:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-    - name: Deploy Actions To All Repositories In Organization
-      id: deploy_actions
-      uses: ./
-      with: 
-        org_id: polarityio
-        action_file_names: |
-          run-int-dev-checklist.yml
-          release-current-version.yml
-        GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
-        repository_names_for_testing: |
-          testing-github-actions
-          test-int-for-actions
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - name: Deploy Actions To All Repositories In Organization
+        id: deploy_actions
+        uses: ./
+        with:
+          org_id: polarityio
+          action_file_names: |
+            run-int-dev-checklist.yml
+            release-current-version.yml
+          GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
