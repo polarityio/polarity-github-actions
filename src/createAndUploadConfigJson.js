@@ -128,7 +128,6 @@ const getCorrectEntityTypeCasing = (entityType) =>
 const transformRegexForJSON = (customType) => {
   const regexString = customType.regex.toString();
 
-  console.info(regexString);
   const modCharToFlag = {
     g: { isGlobal: true },
     i: { isCaseSensitive: false }
