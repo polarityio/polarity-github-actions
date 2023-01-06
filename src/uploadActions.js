@@ -1,16 +1,13 @@
 const fs = require('fs');
-const { REPO_BLOCK_LIST } = require('./constants');
-const { filter, flow, includes, flatMap, map, get } = require('lodash/fp');
+const { flatMap, map, get } = require('lodash/fp');
 
 const uploadActions = async (octokit, orgId, allOrgRepos, actionFileNames) => {
   console.info('\nAction Files to Upload: ', actionFileNames, '\n');
-  
-  const fileCreationFunctions = flow(
-    filter(
-      (repo) => !includes(repo.name, REPO_BLOCK_LIST) && !repo.archived && !repo.disabled
-    ),
-    flatMap(getDeployFunctionsForActionFilesByRepo(octokit, orgId, actionFileNames))
-  )(allOrgRepos);
+
+  const fileCreationFunctions = flatMap(
+    getDeployFunctionsForActionFilesByRepo(octokit, orgId, actionFileNames),
+    allOrgRepos
+  );
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {

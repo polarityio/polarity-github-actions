@@ -12,7 +12,7 @@ const {
   toLower,
   first
 } = require('lodash/fp');
-const { REPO_BLOCK_LIST, CONFIG_JSON_REPO_BLOCK_LIST } = require('./constants');
+const { CONFIG_JSON_REPOSITORY_DEPLOY_BLOCK_LIST } = require('./constants');
 const {
   decodeBase64,
   encodeBase64,
@@ -21,12 +21,7 @@ const {
 
 const createAndUploadConfigJson = async (octokit, orgId, allOrgRepos) => {
   const fileCreationFunctions = flow(
-    filter(
-      (repo) =>
-        !includes(repo.name, REPO_BLOCK_LIST.concat(CONFIG_JSON_REPO_BLOCK_LIST)) &&
-        !repo.archived &&
-        !repo.disabled
-    ),
+    filter((repo) => !includes(repo.name, CONFIG_JSON_REPOSITORY_DEPLOY_BLOCK_LIST)),
     map(getConfigContentAndCreateJsonVersion(octokit, orgId))
   )(allOrgRepos);
 
