@@ -6,7 +6,7 @@ name: Deploy Organization Actions
 
 on:
   push:
-    branches: [ master ]
+    branches: [ develop ]
 
 jobs:
   deploy-organization-actions:
