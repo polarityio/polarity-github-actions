@@ -29,8 +29,9 @@ const main = async () => {
   }
 };
 
+const getNewLineStringInput = flow(core.getInput, split('\n'), map(trim), compact);
+
 main();
 
-const getNewLineStringInput = flow(core.getInput, split('\n'), map(trim), compact);
 
 module.exports = main;
