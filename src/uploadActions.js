@@ -21,18 +21,23 @@ const getDeployFunctionsForActionFilesByRepo =
   ({ name: repoName }) =>
     map(
       (actionFileName) => async () => {
-        const existingFileSha = await getExistingFileShaHash(
-          octokit,
-          orgId,
-          repoName,
-          actionFileName
-        );
-
-        await uploadActionFile(octokit, orgId, repoName, actionFileName, existingFileSha);
-
-        console.info(
-          `- Action Upload Success: ${repoName} <- ${actionFileName}  (https://github.com/polarityio/${repoName}/blob/develop/.github/workflows/${actionFileName})`
-        );
+        try {
+          const existingFileSha = await getExistingFileShaHash(
+            octokit,
+            orgId,
+            repoName,
+            actionFileName
+          );
+  
+          await uploadActionFile(octokit, orgId, repoName, actionFileName, existingFileSha);
+  
+          console.info(
+            `- Action Upload Success: ${repoName} <- ${actionFileName}  (https://github.com/polarityio/${repoName}/blob/develop/.github/workflows/${actionFileName})`
+          );
+        } catch (error) {
+          console.info(`- Action Upload Failed: ${repoName}`);
+          console.info({ repoName, err: parseErrorToReadableJSON(error) });
+        }
       },
       actionFileNames
     );
