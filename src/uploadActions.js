@@ -2,12 +2,13 @@ const fs = require('fs');
 const { flatMap, map, get } = require('lodash/fp');
 
 const uploadActions = async (octokit, orgId, allOrgRepos, actionFileNames) => {
-  console.info('  * Action Files to Upload: ', actionFileNames);
-
   const fileCreationFunctions = flatMap(
     getDeployFunctionsForActionFilesByRepo(octokit, orgId, actionFileNames),
     allOrgRepos
   );
+
+  if (size(fileCreationFunctions))
+    console.info('  * Action Files to Upload: ', actionFileNames);
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {

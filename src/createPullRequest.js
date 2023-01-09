@@ -1,14 +1,14 @@
 const { map } = require('lodash');
+const { size } = require('lodash/fp');
 
 const { inspect } = require('util');
 const createPullRquest = async (octokit, orgId, allOrgRepos) => {
-  console.info('Creating Pull Requests: ', '\n');
-
   const pullRequestCreationFunctions = map(
     getPullRequestCreationFunction(octokit, orgId),
     allOrgRepos
   );
 
+  if(size(pullRequestCreationFunctions)) console.info('\nCreating Pull Requests:');
   console.info('Here', { allOrgRepos });
   console.info({
     pullRequestCreationFunctions: inspect(pullRequestCreationFunctions)
