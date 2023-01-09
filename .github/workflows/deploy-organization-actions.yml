@@ -24,4 +24,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
         # Add repository_names_for_testing property here
         repository_names_for_testing: |
-          worldtradingdata
+          testing-github-actions

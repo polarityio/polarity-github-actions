@@ -5,6 +5,7 @@ const { split, flow, map, trim, size, compact } = require('lodash/fp');
 const getAllReposInOrg = require('./src/getAllReposInOrg');
 const uploadActions = require('./src/uploadActions');
 const createAndUploadConfigJson = require('./src/createAndUploadConfigJson');
+const createPullRequest = require('./src/createPullRequest');
 
 const main = async () => {
   try {
@@ -16,13 +17,15 @@ const main = async () => {
     const token = core.getInput('GITHUB_TOKEN');
     const octokit = github.getOctokit(token);
 
-    const allOrgRepos = size(repoNamesForTesting)
-      ? map((name) => ({ name }), repoNamesForTesting)
-      : await getAllReposInOrg(octokit, orgId);
+    // const allOrgRepos = size(repoNamesForTesting)
+    //   ? map((name) => ({ name }), repoNamesForTesting)
+    //   : await getAllReposInOrg(octokit, orgId);
 
-    await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
+    // await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
 
-    await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
+    // await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
+
+    await createPullRequest(octokit, orgId, allOrgRepos);
   } catch (error) {
     core.setFailed(error);
   }
