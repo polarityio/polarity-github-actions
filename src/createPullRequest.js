@@ -1,5 +1,6 @@
 const { map } = require('lodash');
 
+const { inspect } = require('util');
 const createPullRquest = async (octokit, orgId, allOrgRepos) => {
   console.info('Creating Pull Requests: ', '\n');
 
@@ -7,6 +8,11 @@ const createPullRquest = async (octokit, orgId, allOrgRepos) => {
     getPullRequestCreationFunction(octokit, orgId),
     allOrgRepos
   );
+
+  console.info('Here', { allOrgRepos });
+  console.info({
+    pullRequestCreationFunctions: inspect(pullRequestCreationFunctions)
+  });
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const pullRequestCreationFunction of pullRequestCreationFunctions) {
@@ -18,7 +24,8 @@ const getPullRequestCreationFunction =
   ({ name: repoName }) =>
   async () => {
     try {
-      const result = await octokit.pulls.create({
+      console.info('is This Running?');
+      const result = await octokit.rest.pulls.create({
         owner: orgId,
         repo: repoName,
         title: 'Updating Github Actions & Adding config.json',
