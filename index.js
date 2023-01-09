@@ -17,9 +17,9 @@ const main = async () => {
     const token = core.getInput('GITHUB_TOKEN');
     const octokit = github.getOctokit(token);
 
-    // const allOrgRepos = size(repoNamesForTesting)
-    //   ? map((name) => ({ name }), repoNamesForTesting)
-    //   : await getAllReposInOrg(octokit, orgId);
+    const allOrgRepos = size(repoNamesForTesting)
+      ? map((name) => ({ name }), repoNamesForTesting)
+      : await getAllReposInOrg(octokit, orgId);
 
     // await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
 
