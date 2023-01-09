@@ -61,7 +61,7 @@ const uploadActionFile = (octokit, orgId, repoName, actionFileName, existingFile
     path: `.github/workflows/${actionFileName}`,
     ...(existingFileSha && { sha: existingFileSha }),
 
-    message: `Uploading Github Action: ${actionFileName}`,
+    message: `Updated Github Action: ${actionFileName}`,
     content: fs.readFileSync(`./src/${actionFileName}`, 'base64'),
     committer: {
       name: orgId,
