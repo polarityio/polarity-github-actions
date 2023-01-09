@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { flatMap, map, get, size } = require('lodash/fp');
+const { parseErrorToReadableJSON } = require('./dataTransformations');
 
 const uploadActions = async (octokit, orgId, allOrgRepos, actionFileNames) => {
   const fileCreationFunctions = flatMap(
