@@ -4,7 +4,7 @@ name: Deploy Organization Actions
 on:
   push:
     # Target develop branch for testing & updates
-    branches: [ develop ]
+    branches: [ master ]
 
 jobs:
   deploy-organization-actions:
