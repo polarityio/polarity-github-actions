@@ -18,7 +18,7 @@ const getPullRequestCreationFunction =
   ({ name: repoName }) =>
   async () => {
     try {
-      const result = await octokit.rest.pulls.create({
+      const result = await octokit.pulls.create({
         owner: orgId,
         repo: repoName,
         title: 'Updating Github Actions & Adding config.json',
