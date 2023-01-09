@@ -21,7 +21,10 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'polarity-user-creation',
   'polarityio.github.io',
   'worldtradingdata',
-  'wikipedia'
+  'wikipedia',
+  'demo-asset',
+  'active-directory',
+  'screenshotmachine'
 ];
 
 // Repo names where the config.json will need to be created manually

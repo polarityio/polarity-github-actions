@@ -21,12 +21,11 @@ const main = async () => {
       ? map((name) => ({ name }), repoNamesForTesting)
       : await getAllReposInOrg(octokit, orgId);
 
-      console.info({allOrgRepos: map(get('name'), allOrgRepos)});
-    // await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
+    await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
 
-    // await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
+    await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
 
-    // await createPullRequest(octokit, orgId, allOrgRepos);
+    await createPullRequest(octokit, orgId, allOrgRepos);
   } catch (error) {
     core.setFailed(error);
   }
