@@ -19,17 +19,19 @@ const getPullRequestCreationFunction =
   ({ name: repoName }) =>
   async () => {
     try {
-      const html_url = get(
-        'data.html_url',
-        await octokit.pulls.create({
-          owner: orgId,
-          repo: repoName,
-          title: 'Updating Github Actions & Adding config.json',
-          head: 'develop',
-          base: 'master'
-        })
-      );
 
+      const response = await octokit.pulls.create({
+        owner: orgId,
+        repo: repoName,
+        title: 'Updating Github Actions & Adding config.json',
+        head: 'develop',
+        base: 'master'
+      });
+
+      const html_url = get('data.html_url', response);
+      const headers = get('headers', response);
+
+      console.log({ headers });
       console.info(`- Pull Request Initiation Success: ${repoName} (${html_url})`);
     } catch (error) {
       console.info(`- Pull Request Initiation Failed: ${repoName}`);

@@ -24,7 +24,13 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'wikipedia',
   'demo-asset',
   'active-directory',
-  'screenshotmachine'
+  'screenshotmachine',
+  'template-integration',
+  'aceintel',
+  'tardis',
+  'demo-assets',
+  'polarity-integration-utils',
+  'url-unshortener'
 ];
 
 // Repo names where the config.json will need to be created manually
