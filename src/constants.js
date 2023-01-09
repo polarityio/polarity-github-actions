@@ -18,9 +18,10 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'arcsight',
   'int-ui-code-reference',
   'polarity-csv-loader',
-  'odin-delete-me',
   'polarity-user-creation',
-  'polarityio.github.io'
+  'polarityio.github.io',
+  'worldtradingdata',
+  'wikipedia'
 ];
 
 // Repo names where the config.json will need to be created manually

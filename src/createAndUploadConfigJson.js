@@ -25,7 +25,7 @@ const createAndUploadConfigJson = async (octokit, orgId, allOrgRepos) => {
     map(getConfigContentAndCreateJsonVersion(octokit, orgId))
   )(allOrgRepos);
 
-  if (size(fileCreationFunctions)) console.info('\nStarting Upload of All `config.json` Files');
+  if (size(fileCreationFunctions)) console.info('\n\nStarting Upload of All `config.json` Files');
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {

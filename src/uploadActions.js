@@ -8,7 +8,7 @@ const uploadActions = async (octokit, orgId, allOrgRepos, actionFileNames) => {
   );
 
   if (size(fileCreationFunctions))
-    console.info('  * Action Files to Upload: ', actionFileNames);
+    console.info('* Action Files to Upload: ', actionFileNames);
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {
