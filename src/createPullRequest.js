@@ -1,7 +1,7 @@
 const { map } = require('lodash');
 
 const createPullRquest = async (octokit, orgId, allOrgRepos) => {
-  console.info('Creating Pull Requests: ', actionFileNames, '\n');
+  console.info('Creating Pull Requests: ', '\n');
 
   const pullRequestCreationFunctions = map(
     getPullRequestCreationFunction(octokit, orgId),

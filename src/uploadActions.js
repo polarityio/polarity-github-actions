@@ -2,7 +2,7 @@ const fs = require('fs');
 const { flatMap, map, get } = require('lodash/fp');
 
 const uploadActions = async (octokit, orgId, allOrgRepos, actionFileNames) => {
-  console.info('Action Files to Upload: ', actionFileNames, '\n');
+  console.info('  * Action Files to Upload: ', actionFileNames);
 
   const fileCreationFunctions = flatMap(
     getDeployFunctionsForActionFilesByRepo(octokit, orgId, actionFileNames),
