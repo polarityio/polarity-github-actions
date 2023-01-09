@@ -1,7 +1,10 @@
-const { map } = require('lodash');
-const { size } = require('lodash/fp');
+const { size, map } = require('lodash/fp');
+const {
+  parseErrorToReadableJSON
+} = require('./dataTransformations');
 
 const { inspect } = require('util');
+
 const createPullRquest = async (octokit, orgId, allOrgRepos) => {
   const pullRequestCreationFunctions = map(
     getPullRequestCreationFunction(octokit, orgId),
