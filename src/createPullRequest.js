@@ -35,14 +35,14 @@ const getPullRequestCreationFunction =
       console.log({ headers });
       console.info(`- Pull Request Initiation Success: ${repoName} (${html_url})`);
     } catch (error) {
-      const headers = get('response.headers', error);
 
       console.info(`- Pull Request Initiation Failed: ${repoName}`);
       console.info({
         repoName,
-        headers,
-        error: inspect(headers),
-        err: parseErrorToReadableJSON(error)
+        error: inspect(error),
+        err: parseErrorToReadableJSON(error),
+        errRequest: parseErrorToReadableJSON(error.request),
+        errHeaders: parseErrorToReadableJSON(error.headers)
       });
 
       if (error.status === 403) {
