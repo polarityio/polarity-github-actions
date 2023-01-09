@@ -1,5 +1,6 @@
 const { size, map, get } = require('lodash/fp');
 const { parseErrorToReadableJSON } = require('./dataTransformations');
+const { inspect } = require('util');
 
 const createPullRquest = async (octokit, orgId, allOrgRepos) => {
   const pullRequestCreationFunctions = map(
@@ -19,7 +20,6 @@ const getPullRequestCreationFunction =
   ({ name: repoName }) =>
   async () => {
     try {
-
       const response = await octokit.pulls.create({
         owner: orgId,
         repo: repoName,
@@ -34,8 +34,20 @@ const getPullRequestCreationFunction =
       console.log({ headers });
       console.info(`- Pull Request Initiation Success: ${repoName} (${html_url})`);
     } catch (error) {
+      const headers = get('response.headers', error);
+
       console.info(`- Pull Request Initiation Failed: ${repoName}`);
-      console.info({ repoName, err: parseErrorToReadableJSON(error) });
+      console.info({
+        repoName,
+        headers,
+        error: inspect(headers),
+        err: parseErrorToReadableJSON(error)
+      });
+
+      if (error.status === 403) {
+        throw new Error("Hit Rate Limit. Stopping Action...")
+      }
+
     }
   };
 
