@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { map, size } = require('lodash/fp');
+const { map, size, get } = require('lodash/fp');
 
 const getAllReposInOrg = require('./src/getAllReposInOrg');
 const uploadActions = require('./src/uploadActions');
@@ -21,7 +21,7 @@ const main = async () => {
       ? map((name) => ({ name }), repoNamesForTesting)
       : await getAllReposInOrg(octokit, orgId);
 
-      console.info({allOrgRepos});
+      console.info({allOrgRepos: map(get('name'), allOrgRepos)});
     // await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
 
     // await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
