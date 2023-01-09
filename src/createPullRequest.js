@@ -1,5 +1,5 @@
 const { size, map, get } = require('lodash/fp');
-const { parseErrorToReadableJSON } = require('./dataTransformations');
+const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
 const { inspect } = require('util');
 
 const createPullRquest = async (octokit, orgId, allOrgRepos) => {
@@ -13,6 +13,7 @@ const createPullRquest = async (octokit, orgId, allOrgRepos) => {
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const pullRequestCreationFunction of pullRequestCreationFunctions) {
     await pullRequestCreationFunction();
+    await sleep(5000)
   }
 };
 const getPullRequestCreationFunction =
