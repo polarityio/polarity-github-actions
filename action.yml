@@ -7,6 +7,9 @@ inputs:
   action_file_names:
     description: 'The file names of all github account that can be found at the root of this Organization that you want to deploy to all repos in the Organization'
     required: true
+  repository_names_for_testing:
+    description: 'A multi-line string input containing the repository names you wish to test on while developing.'
+    required: false
   GITHUB_TOKEN:
     description: 'Github token'
     required: true
