@@ -1,5 +1,5 @@
 // Non-Integration Repo Names
-const REPO_BLOCK_LIST = [
+const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'testing-github-actions',
   'test-int-for-actions',
   'reference-channels',
@@ -18,13 +18,14 @@ const REPO_BLOCK_LIST = [
   'arcsight',
   'int-ui-code-reference',
   'polarity-csv-loader',
-  'odin-delete-me',
   'polarity-user-creation',
-  'polarityio.github.io'
+  'polarityio.github.io',
+  'worldtradingdata',
+  'wikipedia'
 ];
 
 // Repo names where the config.json will need to be created manually
-const CONFIG_JSON_REPO_BLOCK_LIST = [
+const CONFIG_JSON_REPOSITORY_DEPLOY_BLOCK_LIST = [
   'sentinelone',
   'ironnet-collective-defense-portal',
   'threatquotient',
@@ -36,6 +37,6 @@ const CONFIG_JSON_REPO_BLOCK_LIST = [
 ];
 
 module.exports = {
-  REPO_BLOCK_LIST,
-  CONFIG_JSON_REPO_BLOCK_LIST
+  REPOSITORY_DEPLOY_BLOCK_LIST,
+  CONFIG_JSON_REPOSITORY_DEPLOY_BLOCK_LIST
 };

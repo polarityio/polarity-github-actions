@@ -7,9 +7,12 @@ const {
   includes,
   map,
   split,
-  reduce
+  reduce,
+  compact,
+  toLower,
+  first
 } = require('lodash/fp');
-const { REPO_BLOCK_LIST, CONFIG_JSON_REPO_BLOCK_LIST } = require('./constants');
+const { CONFIG_JSON_REPOSITORY_DEPLOY_BLOCK_LIST } = require('./constants');
 const {
   decodeBase64,
   encodeBase64,
@@ -18,16 +21,11 @@ const {
 
 const createAndUploadConfigJson = async (octokit, orgId, allOrgRepos) => {
   const fileCreationFunctions = flow(
-    filter(
-      (repo) =>
-        !includes(repo.name, REPO_BLOCK_LIST.concat(CONFIG_JSON_REPO_BLOCK_LIST)) &&
-        !repo.archived &&
-        !repo.disabled
-    ),
+    filter((repo) => !includes(repo.name, CONFIG_JSON_REPOSITORY_DEPLOY_BLOCK_LIST)),
     map(getConfigContentAndCreateJsonVersion(octokit, orgId))
   )(allOrgRepos);
 
-  if (size(fileCreationFunctions)) console.log('\nUploading config.json');
+  if (size(fileCreationFunctions)) console.info('\n\nStarting Upload of All `config.json` Files');
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {
@@ -69,10 +67,12 @@ const getConfigContentAndCreateJsonVersion =
           email: 'info@polarity.io'
         }
       });
-      console.log(`- Config.json Upload Success: ${repoName}`);
+      console.info(
+        `- Config.json Upload Success: ${repoName}  (https://github.com/polarityio/${repoName}/blob/develop/config/config.json)`
+      );
     } catch (error) {
-      console.log(`- Config.json Upload Failed: ${repoName}`);
-      console.log({ repoName, err: parseErrorToReadableJSON(error) });
+      console.info(`- Config.json Upload Failed: ${repoName}`);
+      console.info({ repoName, err: parseErrorToReadableJSON(error) });
     }
   };
 
@@ -92,7 +92,7 @@ const createConfigJsonContent = (configJsContents) => {
   const formattedCustomTypes = size(configJsJsonContent.customTypes) && {
     customTypes: map(transformRegexForJSON, configJsJsonContent.customTypes)
   };
-  
+
   const configJsonJsContent = {
     ...configJsJsonContent,
     entityTypes: entityTypesWithCorrectCasing,
@@ -124,15 +124,14 @@ const getCorrectEntityTypeCasing = (entityType) =>
 const transformRegexForJSON = (customType) => {
   const regexString = customType.regex.toString();
 
-  const unwrappedRegexString = replace(/([^\/]+$)/, '', regexString).slice(1, -1);
-
   const modCharToFlag = {
     g: { isGlobal: true },
     i: { isCaseSensitive: false }
   };
 
   const regexModifiers = flow(
-    split,
+    first,
+    split(''),
     reduce(
       (agg, modifierCharacter) => ({
         ...agg,
@@ -141,6 +140,8 @@ const transformRegexForJSON = (customType) => {
       {}
     )
   )(regexString.match(/([^\/]+$)/));
+
+  const unwrappedRegexString = replace(/([^\/]+$)/, '', regexString).slice(1, -1);
 
   return {
     ...customType,

@@ -1,4 +1,5 @@
 const fp = require('lodash/fp');
+const { REPOSITORY_DEPLOY_BLOCK_LIST } = require('./constants');
 
 const getAllReposInOrg = async (octokit, orgId, pageNumber = 1, agg = []) => {
   const repos = fp.getOr(
@@ -13,9 +14,12 @@ const getAllReposInOrg = async (octokit, orgId, pageNumber = 1, agg = []) => {
 
   if (repos.length < 100) {
     const allReposInOrg = agg.concat(repos);
-    console.log('Number of Repos Found: ', allReposInOrg.length);
+    console.info('Number of Repos Found: ', allReposInOrg.length);
 
-    return allReposInOrg;
+    return fp.filter(
+      (repo) => !fp.includes(repo.name, REPOSITORY_DEPLOY_BLOCK_LIST) && !repo.archived && !repo.disabled,
+      allReposInOrg
+    );
   }
 
   return await getAllReposInOrg(octokit, orgId, pageNumber + 1, agg.concat(repos));

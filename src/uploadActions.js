@@ -1,16 +1,14 @@
 const fs = require('fs');
-const { REPO_BLOCK_LIST } = require('./constants');
-const { filter, flow, includes, flatMap, map, get } = require('lodash/fp');
+const { flatMap, map, get, size } = require('lodash/fp');
 
 const uploadActions = async (octokit, orgId, allOrgRepos, actionFileNames) => {
-  console.log('\nAction Files to Upload: ', actionFileNames, '\n');
-  
-  const fileCreationFunctions = flow(
-    filter(
-      (repo) => !includes(repo.name, REPO_BLOCK_LIST) && !repo.archived && !repo.disabled
-    ),
-    flatMap(getDeployFunctionsForActionFilesByRepo(octokit, orgId, actionFileNames))
-  )(allOrgRepos);
+  const fileCreationFunctions = flatMap(
+    getDeployFunctionsForActionFilesByRepo(octokit, orgId, actionFileNames),
+    allOrgRepos
+  );
+
+  if (size(fileCreationFunctions))
+    console.info('* Action Files to Upload: ', actionFileNames);
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const fileCreationFunction of fileCreationFunctions) {
@@ -23,16 +21,23 @@ const getDeployFunctionsForActionFilesByRepo =
   ({ name: repoName }) =>
     map(
       (actionFileName) => async () => {
-        const existingFileSha = await getExistingFileShaHash(
-          octokit,
-          orgId,
-          repoName,
-          actionFileName
-        );
-
-        await uploadActionFile(octokit, orgId, repoName, actionFileName, existingFileSha);
-
-        console.log(`- Action Upload Success: ${repoName} <- ${actionFileName}`);
+        try {
+          const existingFileSha = await getExistingFileShaHash(
+            octokit,
+            orgId,
+            repoName,
+            actionFileName
+          );
+  
+          await uploadActionFile(octokit, orgId, repoName, actionFileName, existingFileSha);
+  
+          console.info(
+            `- Action Upload Success: ${repoName} <- ${actionFileName}  (https://github.com/polarityio/${repoName}/blob/develop/.github/workflows/${actionFileName})`
+          );
+        } catch (error) {
+          console.info(`- Action Upload Failed: ${repoName}`);
+          console.info({ repoName, err: parseErrorToReadableJSON(error) });
+        }
       },
       actionFileNames
     );
@@ -62,7 +67,7 @@ const uploadActionFile = (octokit, orgId, repoName, actionFileName, existingFile
     path: `.github/workflows/${actionFileName}`,
     ...(existingFileSha && { sha: existingFileSha }),
 
-    message: `Uploading Github Action: ${actionFileName}`,
+    message: `Updated Github Action: ${actionFileName}`,
     content: fs.readFileSync(`./src/${actionFileName}`, 'base64'),
     committer: {
       name: orgId,

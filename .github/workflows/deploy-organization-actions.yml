@@ -1,11 +1,9 @@
-# This workflow will run on merge of a PR or push to master
-# This repo contains all of our Github Actions we want to use in our Organization and the ability to publish them to all repos in the Organization.
-
 
 name: Deploy Organization Actions
 
 on:
   push:
+    # Target develop branch for testing & updates
     branches: [ master ]
 
 jobs:
@@ -24,3 +22,6 @@ jobs:
           run-int-dev-checklist.yml
           release-current-version.yml
         GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
+        # Add repository_names_for_testing property here
+        # repository_names_for_testing: |
+        #   testing-github-actions
