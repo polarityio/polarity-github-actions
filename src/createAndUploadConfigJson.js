@@ -85,7 +85,6 @@ const createConfigJsonContent = (configJsContents) => {
     eval
   )(configJsContents);
 
-  console.log
   const entityTypesWithCorrectCasing = compact(
     map(getCorrectEntityTypeCasing, configJsJsonContent.entityTypes)
   );
