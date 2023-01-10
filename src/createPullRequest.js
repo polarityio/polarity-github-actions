@@ -1,6 +1,7 @@
-const { size, map, get } = require('lodash/fp');
+const { size, map, get, isEmpty, first } = require('lodash/fp');
 const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
 const { inspect } = require('util');
+const { flow } = require('lodash');
 
 const createPullRquest = async (octokit, orgId, allOrgRepos) => {
   const pullRequestCreationFunctions = map(
@@ -13,7 +14,7 @@ const createPullRquest = async (octokit, orgId, allOrgRepos) => {
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const pullRequestCreationFunction of pullRequestCreationFunctions) {
     await pullRequestCreationFunction();
-    await sleep(5000)
+    await sleep(20000);
   }
 };
 const getPullRequestCreationFunction =
@@ -21,34 +22,47 @@ const getPullRequestCreationFunction =
   ({ name: repoName }) =>
   async () => {
     try {
-      const response = await octokit.pulls.create({
-        owner: orgId,
-        repo: repoName,
-        title: 'Updating Github Actions & Adding config.json',
-        head: 'develop',
-        base: 'master'
-      });
+      const pullRequests = get(
+        'data',
+        await octokit.pulls.list({
+          owner: orgId,
+          repo: repoName,
+          state: 'open'
+        })
+      );
 
-      const html_url = get('data.html_url', response);
-      const headers = get('headers', response);
+      const openPullRequestsExist = !isEmpty(pullRequests);
 
-      console.log({ headers });
-      console.info(`- Pull Request Initiation Success: ${repoName} (${html_url})`);
+      const html_url = openPullRequestsExist
+        ? flow(first, get('html_url'))(pullRequests)
+        : get(
+            'data.html_url',
+            await octokit.pulls.create({
+              owner: orgId,
+              repo: repoName,
+              title: 'Updating Github Actions & Adding config.json',
+              head: 'develop',
+              base: 'master'
+            })
+          );
+
+      console.info(
+        `- Pull Request ${
+          openPullRequestsExist ? 'Found' : 'Initiation Success'
+        }: ${repoName} (${html_url})`
+      );
     } catch (error) {
-
       console.info(`- Pull Request Initiation Failed: ${repoName}`);
       console.info({
         repoName,
-        error: inspect(error),
         err: parseErrorToReadableJSON(error),
         errRequest: parseErrorToReadableJSON(error.request),
         errHeaders: parseErrorToReadableJSON(error.headers)
       });
 
       if (error.status === 403) {
-        throw new Error("Hit Rate Limit. Stopping Action...")
+        throw new Error('Hit Rate Limit. Stopping Action...');
       }
-
     }
   };
 
