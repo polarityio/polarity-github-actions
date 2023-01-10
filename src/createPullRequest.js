@@ -46,14 +46,15 @@ const getPullRequestCreationFunction =
             })
           );
 
-      console.log({ pullRequests, openPullRequestsExist, html_url });
-      
-      console.info(`- Pull Request Initiation Success: ${repoName} (${html_url})`);
+      console.info(
+        `- Pull Request ${
+          openPullRequestsExist ? 'Found' : 'Initiation Success'
+        }: ${repoName} (${html_url})`
+      );
     } catch (error) {
       console.info(`- Pull Request Initiation Failed: ${repoName}`);
       console.info({
         repoName,
-        error: inspect(error),
         err: parseErrorToReadableJSON(error),
         errRequest: parseErrorToReadableJSON(error.request),
         errHeaders: parseErrorToReadableJSON(error.headers)
