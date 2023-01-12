@@ -1,4 +1,4 @@
-const { size, map, get, isEmpty, compact } = require('lodash/fp');
+const { size, map, get, isEmpty, compact, flow, first } = require('lodash/fp');
 const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
 
 const createPullRquest = async (octokit, orgId, allOrgRepos) => {
@@ -44,20 +44,21 @@ const getRepoNameWithoutPullRequestFunction =
           state: 'open'
         })
       );
-
+      
       const openPullRequestsExist = !isEmpty(pullRequests);
 
       if (!openPullRequestsExist) return repoName;
+
+      const html_url = flow(first, get('html_url'))(pullRequests);
 
       console.info(`- Pull Request Found: ${repoName} (${html_url})`);
     } catch (error) {
       console.info(`- Pull Request Query Failed: ${repoName}`);
       console.info({
         repoName,
-        error
-        // err: parseErrorToReadableJSON(error),
-        // errRequest: parseErrorToReadableJSON(error.request),
-        // errHeaders: parseErrorToReadableJSON(error.headers)
+        err: parseErrorToReadableJSON(error),
+        errRequest: parseErrorToReadableJSON(error.request),
+        errHeaders: parseErrorToReadableJSON(error.headers)
       });
 
       if (error.status === 403) {
