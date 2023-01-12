@@ -21,7 +21,7 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
     octokit,
     orgId,
     repoName: currentRepo.name,
-    relativePath: './package.json',
+    relativePath: 'package.json',
     updatePreviousFile
   });
 
