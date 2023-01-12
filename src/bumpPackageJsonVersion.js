@@ -12,6 +12,7 @@ const {
   replace
 } = require('lodash/fp');
 const { decodeBase64 } = require('./dataTransformations');
+const { createOrUpdateFile } = require('./octokitHelpers');
 
 const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRepos]) => {
   if (isEmpty(currentRepo)) return;
