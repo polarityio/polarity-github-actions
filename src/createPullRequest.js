@@ -44,7 +44,7 @@ const getRepoNameWithoutPullRequestFunction =
           state: 'open'
         })
       );
-      
+
       const openPullRequestsExist = !isEmpty(pullRequests);
 
       if (!openPullRequestsExist) return repoName;
