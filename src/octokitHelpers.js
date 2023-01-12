@@ -49,7 +49,7 @@ const createOrUpdateFile = async ({
   branch = 'develop',
   relativePath,
   newFileContent,
-  updatePreviousFile = () => ''
+  updatePreviousFile
 }) => {
   try {
     const currentFileContent = await getExistingFile(
@@ -62,17 +62,20 @@ const createOrUpdateFile = async ({
 
     const existingFileSha = get('data.sha', currentFileContent);
 
-    const uploadedFile = await uploadFile(
-      octokit,
-      orgId,
-      repoName,
-      branch,
-      relativePath,
-      existingFileSha,
-      existingFileSha && updatePreviousFile
-        ? updatePreviousFile(currentFileContent)
-        : newFileContent
-    );
+    const uploadedFile =
+      (existingFileSha && updatePreviousFile) || newFileContent
+        ? await uploadFile(
+            octokit,
+            orgId,
+            repoName,
+            branch,
+            relativePath,
+            existingFileSha,
+            existingFileSha && updatePreviousFile
+              ? updatePreviousFile(currentFileContent)
+              : newFileContent
+          )
+        : {};
 
     console.info({ currentFileContent, uploadedFile });
     console.info(`- File Upload Successful: ${repoName} <- "${relativePath}"  ()`);

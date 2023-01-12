@@ -22,13 +22,13 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
     orgId,
     repoName: currentRepo.name,
     relativePath: 'package.json',
-    updatePreviousFile
+    updatePreviousFile: bumpPackageJsonVersionForThisRepo
   });
 
   return await bumpPackageJsonVersion(octokit, orgId, allOrgRepos);
 };
 
-const updatePreviousFile = flow(
+const bumpPackageJsonVersionForThisRepo = flow(
   get('data.content'),
   replace(/\n/g, ''),
   decodeBase64,
@@ -36,7 +36,8 @@ const updatePreviousFile = flow(
   (previousFileContent) => ({
     ...previousFileContent,
     version: bumpSemanticVersion(previousFileContent.version)
-  })
+  }),
+  (packageJson) => JSON.stringify(packageJson, null, 2)
 );
 
 const bumpSemanticVersion = (originalVersion) =>
