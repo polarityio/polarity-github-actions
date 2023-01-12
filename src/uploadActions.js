@@ -37,7 +37,12 @@ const getDeployFunctionsForActionFilesByRepo =
           );
         } catch (error) {
           console.info(`- Action Upload Failed: ${repoName}`);
-          console.info({ repoName, err: parseErrorToReadableJSON(error) });
+          console.info({
+            repoName,
+            err: parseErrorToReadableJSON(error),
+            errRequest: parseErrorToReadableJSON(error.request),
+            errHeaders: parseErrorToReadableJSON(error.headers)
+          });
         }
       },
       actionFileNames
