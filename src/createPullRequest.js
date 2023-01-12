@@ -1,12 +1,25 @@
-const { size, map, get, isEmpty, first } = require('lodash/fp');
+const { size, map, get, isEmpty, first, compact, flow } = require('lodash/fp');
 const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
-const { inspect } = require('util');
-const { flow } = require('lodash');
 
 const createPullRquest = async (octokit, orgId, allOrgRepos) => {
+  const checkForExistingPullRequestFunctions = map(
+    getRepoNameWithoutPullRequestFunction(octokit, orgId),
+    allOrgRepos
+  );
+  if (size(checkForExistingPullRequestFunctions))
+    console.info('\n\nChecking Pull Request Statuses:');
+
+  // Must run file creation in series due to the common use of the octokit instantiation
+  const pullRequestStatuses = [];
+  for (const pullRequestCreationFunction of checkForExistingPullRequestFunctions) {
+    pullRequestStatuses.push(await pullRequestCreationFunction());
+  }
+
+  const reposToCreatePullRequestsOn = compact(pullRequestStatuses);
+
   const pullRequestCreationFunctions = map(
     getPullRequestCreationFunction(octokit, orgId),
-    allOrgRepos
+    reposToCreatePullRequestsOn
   );
 
   if (size(pullRequestCreationFunctions)) console.info('\n\nCreating Pull Requests:');
@@ -14,10 +27,11 @@ const createPullRquest = async (octokit, orgId, allOrgRepos) => {
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const pullRequestCreationFunction of pullRequestCreationFunctions) {
     await pullRequestCreationFunction();
-    await sleep(20000);
+    await sleep(75000);
   }
 };
-const getPullRequestCreationFunction =
+
+const getRepoNameWithoutPullRequestFunction =
   (octokit, orgId) =>
   ({ name: repoName }) =>
   async () => {
@@ -33,24 +47,41 @@ const getPullRequestCreationFunction =
 
       const openPullRequestsExist = !isEmpty(pullRequests);
 
-      const html_url = openPullRequestsExist
-        ? flow(first, get('html_url'))(pullRequests)
-        : get(
-            'data.html_url',
-            await octokit.pulls.create({
-              owner: orgId,
-              repo: repoName,
-              title: 'Updating Github Actions & Adding config.json',
-              head: 'develop',
-              base: 'master'
-            })
-          );
+      if (!openPullRequestsExist) return repoName;
 
-      console.info(
-        `- Pull Request ${
-          openPullRequestsExist ? 'Found' : 'Initiation Success'
-        }: ${repoName} (${html_url})`
+      console.info(`- Pull Request Found: ${repoName} (${html_url})`);
+    } catch (error) {
+      console.info(`- Pull Request Query Failed: ${repoName}`);
+      console.info({
+        repoName,
+        err: parseErrorToReadableJSON(error),
+        errRequest: parseErrorToReadableJSON(error.request),
+        errHeaders: parseErrorToReadableJSON(error.headers)
+      });
+
+      if (error.status === 403) {
+        throw new Error('Hit Rate Limit. Stopping Action...');
+      }
+    }
+  };
+
+const getPullRequestCreationFunction =
+  (octokit, orgId) =>
+  (repoName) =>
+  async () => {
+    try {
+      const html_url = get(
+        'data.html_url',
+        await octokit.pulls.create({
+          owner: orgId,
+          repo: repoName,
+          title: 'Updating Github Actions & Adding config.json',
+          head: 'develop',
+          base: 'master'
+        })
       );
+
+      console.info(`- Pull Request Initiation Success: ${repoName} (${html_url})`);
     } catch (error) {
       console.info(`- Pull Request Initiation Failed: ${repoName}`);
       console.info({
