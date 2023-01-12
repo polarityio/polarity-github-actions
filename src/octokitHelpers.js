@@ -81,8 +81,8 @@ const createOrUpdateFile = async ({
     console.info({
       repoName,
       err: parseErrorToReadableJSON(error),
-      errRequest: parseErrorToReadableJSON(error.request),
-      errHeaders: parseErrorToReadableJSON(error.headers)
+      errRequest: parseErrorToReadableJSON(error.request || {}),
+      errHeaders: parseErrorToReadableJSON(error.headers || {})
     });
   }
 };

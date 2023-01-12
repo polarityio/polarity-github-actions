@@ -57,8 +57,8 @@ const getRepoNameWithoutPullRequestFunction =
       console.info({
         repoName,
         err: parseErrorToReadableJSON(error),
-        errRequest: parseErrorToReadableJSON(error.request),
-        errHeaders: parseErrorToReadableJSON(error.headers)
+        errRequest: parseErrorToReadableJSON(error.request || {}),
+        errHeaders: parseErrorToReadableJSON(error.headers || {})
       });
 
       if (error.status === 403) {
@@ -90,8 +90,8 @@ const getPullRequestCreationFunction = (octokit, orgId) => (repoName) => async (
     console.info({
       repoName,
       err: parseErrorToReadableJSON(error),
-      errRequest: parseErrorToReadableJSON(error.request),
-      errHeaders: parseErrorToReadableJSON(error.headers)
+      errRequest: parseErrorToReadableJSON(error.request || {}),
+      errHeaders: parseErrorToReadableJSON(error.headers || {})
     });
 
     if (error.status === 403) {
