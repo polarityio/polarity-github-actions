@@ -6,6 +6,7 @@ const getAllReposInOrg = require('./src/getAllReposInOrg');
 const uploadActions = require('./src/uploadActions');
 const createAndUploadConfigJson = require('./src/createAndUploadConfigJson');
 const createPullRequest = require('./src/createPullRequest');
+const bumpPackageJsonVersion = require('./src/bumpPackageJsonVersion');
 
 const main = async () => {
   try {
@@ -25,7 +26,9 @@ const main = async () => {
 
     // await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
 
-    await createPullRequest(octokit, orgId, allOrgRepos);
+    await bumpPackageJsonVersion(octokit, orgId, allOrgRepos);
+
+    // await createPullRequest(octokit, orgId, allOrgRepos);
   } catch (error) {
     core.setFailed(error);
   }
