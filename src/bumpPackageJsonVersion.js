@@ -8,7 +8,8 @@ const {
   parseInt,
   last,
   join,
-  includes
+  includes,
+  replace
 } = require('lodash/fp');
 const { decodeBase64 } = require('./dataTransformations');
 
