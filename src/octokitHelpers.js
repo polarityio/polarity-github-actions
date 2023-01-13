@@ -1,7 +1,17 @@
-const { get } = require('lodash/fp');
-const { parseErrorToReadableJSON, encodeBase64 } = require('./dataTransformations');
+const { get, replace } = require('lodash/fp');
+const {
+  parseErrorToReadableJSON,
+  encodeBase64,
+  decodeBase64
+} = require('./dataTransformations');
 
-const getExistingFile = async (octokit, orgId, repoName, branch, relativePath) =>
+const getExistingFile = async ({
+  octokit,
+  orgId = 'polarity',
+  repoName,
+  branch = 'develop',
+  relativePath
+}) =>
   await octokit.repos
     .getContent({
       owner: orgId,
@@ -17,9 +27,9 @@ const getExistingFile = async (octokit, orgId, repoName, branch, relativePath) =
 
 const uploadFile = async (
   octokit,
-  orgId,
+  orgId = 'polarity',
   repoName,
-  branch,
+  branch = 'develop',
   relativePath,
   existingFileSha,
   fileContent
@@ -52,13 +62,13 @@ const createOrUpdateFile = async ({
   updatePreviousFile
 }) => {
   try {
-    const currentFileContent = await getExistingFile(
+    const currentFileContent = await getExistingFile({
       octokit,
       orgId,
       repoName,
       branch,
       relativePath
-    );
+    });
 
     const existingFileSha = get('data.sha', currentFileContent);
 
@@ -90,8 +100,11 @@ const createOrUpdateFile = async ({
   }
 };
 
+const parseFileContent = flow(get('data.content'), replace(/\n/g, ''), decodeBase64);
+
 module.exports = {
   getExistingFile,
   uploadFile,
-  createOrUpdateFile
+  createOrUpdateFile,
+  parseFileContent
 };

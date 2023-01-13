@@ -9,20 +9,30 @@ const {
   last,
   join,
   includes,
-  replace
+  assign,
+  curry
 } = require('lodash/fp');
-const { decodeBase64 } = require('./dataTransformations');
-const { createOrUpdateFile } = require('./octokitHelpers');
+const {
+  createOrUpdateFile,
+  getExistingFile,
+  parseFileContent
+} = require('./octokitHelpers');
 
 const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRepos]) => {
   if (isEmpty(currentRepo)) return;
+
+  const packageJsonFileContent = parseJsonFileContent(
+    await getExistingFile({ octokit, repoName, relativePath: 'package.json' })
+  );
+
+  const newVersion = flow(get('version'), bumpSemanticVersion)(packageJsonFileContent);
 
   await createOrUpdateFile({
     octokit,
     orgId,
     repoName: currentRepo.name,
     relativePath: 'package.json',
-    updatePreviousFile: bumpPackageJsonVersionForThisRepo
+    updatePreviousFile: updateJsonVersion(newVersion)
   });
 
   await createOrUpdateFile({
@@ -30,23 +40,18 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
     orgId,
     repoName: currentRepo.name,
     relativePath: 'package-lock.json',
-    updatePreviousFile: bumpPackageJsonVersionForThisRepo
+    updatePreviousFile: updateJsonVersion(newVersion)
   });
-
 
   return await bumpPackageJsonVersion(octokit, orgId, allOrgRepos);
 };
 
-const bumpPackageJsonVersionForThisRepo = flow(
-  get('data.content'),
-  replace(/\n/g, ''),
-  decodeBase64,
-  JSON.parse,
-  (previousFileContent) => ({
-    ...previousFileContent,
-    version: bumpSemanticVersion(previousFileContent.version)
-  }),
-  (packageJson) => JSON.stringify(packageJson, null, 2)
+const parseJsonFileContent = flow(parseFileContent, JSON.parse);
+
+const updateJsonVersion = curry((version, fileContent) =>
+  flow(assign({ version }), (json) => JSON.stringify(json, null, 2))(
+    fileContent
+  )
 );
 
 const bumpSemanticVersion = (originalVersion) =>
