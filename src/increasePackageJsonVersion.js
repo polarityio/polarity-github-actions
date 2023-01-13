@@ -40,9 +40,9 @@ const increasePackageJsonVersion = async (
           octokit,
           repoName: currentRepo.name,
           relativePath: 'package.json'
-        }),
-        newVersion
-      )
+        })
+      ),
+      newVersion
     });
     await createOrUpdateFile({
       octokit,
@@ -73,7 +73,9 @@ const parseJsonFileContent = flow(parseFileContent, JSON.parse);
 
 const updateJsonVersion = (version) => (fileValue) =>
   flow(
+    (x) => {console.info({ ujvNewVersion: version, fileValue });return x;},
     parseJsonFileContent,
+    (x) => {console.info({ parsedFile: x });return x;},
     (fileContentJson) => ({
       name: fileContentJson.name,
       version,
@@ -85,32 +87,32 @@ const updateJsonVersion = (version) => (fileValue) =>
 const increaseSemanticVersionPatch = (originalVersion) =>
   flow(
     (x) => {
-      console.info({ originalVersion: x });
+      console.info({ isvporiginalVersion: x });
       return x;
     },
     split('-'),
     (x) => {
-      console.info({ splitDash: x });
+      console.info({ isvpsplitDash: x });
       return x;
     },
     first,
     (x) => {
-      console.info({ first: x });
+      console.info({ isvpfirst: x });
       return x;
     },
     split('.'),
     (x) => {
-      console.info({ splitDot: x });
+      console.info({ isvpsplitDot: x });
       return x;
     },
     (versionArray) => set('2', parseInt(10, last(versionArray)) + 1, versionArray),
     (x) => {
-      console.info({ parseNewVersion: x });
+      console.info({ isvpparseNewVersion: x });
       return x;
     },
     join('.'),
     (x) => {
-      console.info({ joinDot: x });
+      console.info({ isvpjoinDot: x });
       return x;
     },
     (nonBetaVersion) =>
