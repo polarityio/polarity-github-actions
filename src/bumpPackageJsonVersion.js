@@ -22,14 +22,16 @@ const {
 const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRepos]) => {
   try {
     if (isEmpty(currentRepo)) return;
-    const packageJsonFileContent = parseJsonFileContent(
-      await getExistingFile({
-        octokit,
-        repoName: currentRepo.name,
-        relativePath: 'package.json'
-      })
-    );
 
+    const asdf = await getExistingFile({
+      octokit,
+      repoName: currentRepo.name,
+      relativePath: 'package.json'
+    });
+    console.info({asdf})
+    const packageJsonFileContent = parseJsonFileContent(
+      asdf
+    );
     const newVersion = flow(get('version'), bumpSemanticVersion)(packageJsonFileContent);
 
     await createOrUpdateFile({
