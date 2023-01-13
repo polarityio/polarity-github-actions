@@ -65,9 +65,9 @@ const increasePackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOr
   }
 };
 
-const getIncreasedVersion = flow(parseJsonFileContent, get('version'), increaseSemanticVersionPatch);
-
 const parseJsonFileContent = flow(parseFileContent, JSON.parse);
+
+const getIncreasedVersion = flow(parseJsonFileContent, get('version'), increaseSemanticVersionPatch);
 
 const updateJsonVersion = (version) => (fileValue) =>
   flow(
