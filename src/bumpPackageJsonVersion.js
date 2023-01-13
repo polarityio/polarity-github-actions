@@ -9,8 +9,7 @@ const {
   last,
   join,
   includes,
-  assign,
-  curry
+  assign
 } = require('lodash/fp');
 const { parseErrorToReadableJSON } = require('./dataTransformations');
 const {
@@ -60,11 +59,10 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
 
 const parseJsonFileContent = flow(parseFileContent, JSON.parse);
 
-const updateJsonVersion = curry((version, fileContent) =>
+const updateJsonVersion = (version) => (fileValue) =>
   flow(parseJsonFileContent, assign({ version }), (json) =>
     JSON.stringify(json, null, 2)
-  )(fileContent)
-);
+  )(fileValue);
 
 const bumpSemanticVersion = (originalVersion) =>
   flow(
