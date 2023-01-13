@@ -60,8 +60,14 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
 const parseJsonFileContent = flow(parseFileContent, JSON.parse);
 
 const updateJsonVersion = (version) => (fileValue) =>
-  flow(parseJsonFileContent, assign({ version }), (json) =>
-    JSON.stringify(json, null, 2)
+  flow(
+    parseJsonFileContent,
+    (fileContentJson) => ({
+      name: fileContentJson.name,
+      version,
+      ...fileContentJson
+    }),
+    (json) => JSON.stringify(json, null, 2)
   )(fileValue);
 
 const bumpSemanticVersion = (originalVersion) =>
