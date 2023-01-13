@@ -1,7 +1,7 @@
 const { size, map, get, isEmpty, compact, flow, first } = require('lodash/fp');
 const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
 
-const createPullRquest = async (octokit, orgId, allOrgRepos) => {
+const createPullRequest = async (octokit, orgId, allOrgRepos) => {
   const checkForExistingPullRequestFunctions = map(
     getRepoNameWithoutPullRequestFunction(octokit, orgId),
     allOrgRepos
@@ -57,8 +57,8 @@ const getRepoNameWithoutPullRequestFunction =
       console.info({
         repoName,
         err: parseErrorToReadableJSON(error),
-        errRequest: parseErrorToReadableJSON(error.request),
-        errHeaders: parseErrorToReadableJSON(error.headers)
+        errRequest: parseErrorToReadableJSON(error.request || {}),
+        errHeaders: parseErrorToReadableJSON(error.headers || {})
       });
 
       if (error.status === 403) {
@@ -75,6 +75,10 @@ const getPullRequestCreationFunction = (octokit, orgId) => (repoName) => async (
         owner: orgId,
         repo: repoName,
         title: 'Updating Github Actions & Adding config.json',
+        body: '## How to test' + 
+        '- []: Verify Action files are updated and correct' +
+        '- []: Verify `config.json` files are updated and correct' +
+        '  - []: Entity & Custom Types are correct',
         head: 'develop',
         base: 'master'
       })
@@ -86,8 +90,8 @@ const getPullRequestCreationFunction = (octokit, orgId) => (repoName) => async (
     console.info({
       repoName,
       err: parseErrorToReadableJSON(error),
-      errRequest: parseErrorToReadableJSON(error.request),
-      errHeaders: parseErrorToReadableJSON(error.headers)
+      errRequest: parseErrorToReadableJSON(error.request || {}),
+      errHeaders: parseErrorToReadableJSON(error.headers || {})
     });
 
     if (error.status === 403) {
@@ -96,4 +100,4 @@ const getPullRequestCreationFunction = (octokit, orgId) => (repoName) => async (
   }
 };
 
-module.exports = createPullRquest;
+module.exports = createPullRequest;
