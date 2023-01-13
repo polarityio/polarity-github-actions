@@ -31,7 +31,6 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
       })
     );
 
-    console.info({ packageJsonFileContent });
 
     const newVersion = flow(get('version'), bumpSemanticVersion)(packageJsonFileContent);
 
@@ -49,6 +48,12 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
       repoName: currentRepo.name,
       relativePath: 'package-lock.json',
       updatePreviousFile: updateJsonVersion(newVersion)
+    });
+
+    console.info({
+      packageJsonFileContent,
+      newVersion,
+      updatePreviousFile: updateJsonVersion(newVersion)(packageJsonFileContent)
     });
 
     return await bumpPackageJsonVersion(octokit, orgId, allOrgRepos);
