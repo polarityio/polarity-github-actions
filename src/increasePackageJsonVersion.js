@@ -73,48 +73,38 @@ const parseJsonFileContent = flow(parseFileContent, JSON.parse);
 
 const updateJsonVersion = (version) => (fileValue) =>
   flow(
-    (x) => {console.info({ ujvNewVersion: version, fileValue });return x;},
+    (x) => {
+      console.info({ ujvNewVersion: version, fileValue });
+      return x;
+    },
     parseJsonFileContent,
-    (x) => {console.info({ parsedFile: x });return x;},
+    (x) => {
+      console.info({ parsedFile: x, version });
+      return x;
+    },
     (fileContentJson) => ({
       name: fileContentJson.name,
       version,
       ...fileContentJson
     }),
+    (x) => {
+      console.info({
+        newVersionShouldBeHere: x,
+        stringified: JSON.stringify(x, null, 2),
+        version
+      });
+      return x;
+    },
     (json) => JSON.stringify(json, null, 2)
   )(fileValue);
 
 const increaseSemanticVersionPatch = (originalVersion) =>
   flow(
-    (x) => {
-      console.info({ isvporiginalVersion: x });
-      return x;
-    },
     split('-'),
-    (x) => {
-      console.info({ isvpsplitDash: x });
-      return x;
-    },
     first,
-    (x) => {
-      console.info({ isvpfirst: x });
-      return x;
-    },
     split('.'),
-    (x) => {
-      console.info({ isvpsplitDot: x });
-      return x;
-    },
     (versionArray) => set('2', parseInt(10, last(versionArray)) + 1, versionArray),
-    (x) => {
-      console.info({ isvpparseNewVersion: x });
-      return x;
-    },
     join('.'),
-    (x) => {
-      console.info({ isvpjoinDot: x });
-      return x;
-    },
     (nonBetaVersion) =>
       includes('-beta', originalVersion) ? nonBetaVersion + '-beta' : nonBetaVersion
   )(originalVersion);
