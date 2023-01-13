@@ -7,7 +7,7 @@ const {
 
 const getExistingFile = async ({
   octokit,
-  orgId = 'polarity',
+  orgId = 'polarityio',
   repoName,
   branch = 'develop',
   relativePath
@@ -27,7 +27,7 @@ const getExistingFile = async ({
 
 const uploadFile = async (
   octokit,
-  orgId = 'polarity',
+  orgId = 'polarityio',
   repoName,
   branch = 'develop',
   relativePath,
