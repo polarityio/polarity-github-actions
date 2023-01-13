@@ -18,7 +18,11 @@ const {
   parseFileContent
 } = require('./octokitHelpers');
 
-const increasePackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRepos]) => {
+const increasePackageJsonVersion = async (
+  octokit,
+  orgId,
+  [currentRepo, ...allOrgRepos]
+) => {
   try {
     if (isEmpty(currentRepo)) return;
 
@@ -67,8 +71,6 @@ const increasePackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOr
 
 const parseJsonFileContent = flow(parseFileContent, JSON.parse);
 
-const getIncreasedVersion = flow(parseJsonFileContent, get('version'), increaseSemanticVersionPatch);
-
 const updateJsonVersion = (version) => (fileValue) =>
   flow(
     parseJsonFileContent,
@@ -82,19 +84,43 @@ const updateJsonVersion = (version) => (fileValue) =>
 
 const increaseSemanticVersionPatch = (originalVersion) =>
   flow(
-    x => {console.info({ originalVersion: x }); return x;},
+    (x) => {
+      console.info({ originalVersion: x });
+      return x;
+    },
     split('-'),
-    x => {console.info({ splitDash: x }); return x;},
+    (x) => {
+      console.info({ splitDash: x });
+      return x;
+    },
     first,
-    x => {console.info({ first: x }); return x;},
+    (x) => {
+      console.info({ first: x });
+      return x;
+    },
     split('.'),
-    x => {console.info({ splitDot: x }); return x;},
+    (x) => {
+      console.info({ splitDot: x });
+      return x;
+    },
     (versionArray) => set('2', parseInt(10, last(versionArray)) + 1, versionArray),
-    x => {console.info({ parseNewVersion: x }); return x;},
+    (x) => {
+      console.info({ parseNewVersion: x });
+      return x;
+    },
     join('.'),
-    x => {console.info({ joinDot: x }); return x;},
+    (x) => {
+      console.info({ joinDot: x });
+      return x;
+    },
     (nonBetaVersion) =>
       includes('-beta', originalVersion) ? nonBetaVersion + '-beta' : nonBetaVersion
   )(originalVersion);
+
+const getIncreasedVersion = flow(
+  parseJsonFileContent,
+  get('version'),
+  increaseSemanticVersionPatch
+);
 
 module.exports = increasePackageJsonVersion;
