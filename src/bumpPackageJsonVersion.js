@@ -31,6 +31,8 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
       })
     );
 
+    console.info({ packageJsonFileContent });
+
     const newVersion = flow(get('version'), bumpSemanticVersion)(packageJsonFileContent);
 
     await createOrUpdateFile({
