@@ -9,7 +9,8 @@ const {
   last,
   join,
   includes,
-  assign
+  assign,
+  omit
 } = require('lodash/fp');
 const { parseErrorToReadableJSON } = require('./dataTransformations');
 const {
@@ -34,16 +35,6 @@ const increasePackageJsonVersion = async (
       })
     );
 
-    console.info({
-      previousVersion: parseJsonFileContent(
-        await getExistingFile({
-          octokit,
-          repoName: currentRepo.name,
-          relativePath: 'package.json'
-        })
-      ),
-      newVersion
-    });
     await createOrUpdateFile({
       octokit,
       orgId,
@@ -73,28 +64,12 @@ const parseJsonFileContent = flow(parseFileContent, JSON.parse);
 
 const updateJsonVersion = (version) => (fileValue) =>
   flow(
-    (x) => {
-      console.info({ ujvNewVersion: version, fileValue });
-      return x;
-    },
     parseJsonFileContent,
-    (x) => {
-      console.info({ parsedFile: x, version });
-      return x;
-    },
     (fileContentJson) => ({
       name: fileContentJson.name,
       version,
-      ...fileContentJson
+      ...omit('version', fileContentJson)
     }),
-    (x) => {
-      console.info({
-        newVersionShouldBeHere: x,
-        stringified: JSON.stringify(x, null, 2),
-        version
-      });
-      return x;
-    },
     (json) => JSON.stringify(json, null, 2)
   )(fileValue);
 
