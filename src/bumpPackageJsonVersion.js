@@ -19,35 +19,41 @@ const {
 } = require('./octokitHelpers');
 
 const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRepos]) => {
-  if (isEmpty(currentRepo)) return;
+  try {
+    if (isEmpty(currentRepo)) return;
+    const packageJsonFileContent = parseJsonFileContent(
+      await getExistingFile({
+        octokit,
+        repoName: currentRepo.name,
+        relativePath: 'package.json'
+      })
+    );
 
-  const packageJsonFileContent = parseJsonFileContent(
-    await getExistingFile({
+    const newVersion = flow(get('version'), bumpSemanticVersion)(packageJsonFileContent);
+
+    await createOrUpdateFile({
       octokit,
+      orgId,
       repoName: currentRepo.name,
-      relativePath: 'package.json'
-    })
-  );
+      relativePath: 'package.json',
+      updatePreviousFile: updateJsonVersion(newVersion)
+    });
 
-  const newVersion = flow(get('version'), bumpSemanticVersion)(packageJsonFileContent);
+    await createOrUpdateFile({
+      octokit,
+      orgId,
+      repoName: currentRepo.name,
+      relativePath: 'package-lock.json',
+      updatePreviousFile: updateJsonVersion(newVersion)
+    });
 
-  await createOrUpdateFile({
-    octokit,
-    orgId,
-    repoName: currentRepo.name,
-    relativePath: 'package.json',
-    updatePreviousFile: updateJsonVersion(newVersion)
-  });
-
-  await createOrUpdateFile({
-    octokit,
-    orgId,
-    repoName: currentRepo.name,
-    relativePath: 'package-lock.json',
-    updatePreviousFile: updateJsonVersion(newVersion)
-  });
-
-  return await bumpPackageJsonVersion(octokit, orgId, allOrgRepos);
+    return await bumpPackageJsonVersion(octokit, orgId, allOrgRepos);
+  } catch (error) {
+    console.info({
+      repoName: currentRepo.name,
+      err: parseErrorToReadableJSON(error)
+    });
+  }
 };
 
 const parseJsonFileContent = flow(parseFileContent, JSON.parse);
