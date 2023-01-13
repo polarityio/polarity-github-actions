@@ -1,4 +1,4 @@
-const { get, replace } = require('lodash/fp');
+const { get, replace, flow } = require('lodash/fp');
 const {
   parseErrorToReadableJSON,
   encodeBase64,
