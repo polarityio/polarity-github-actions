@@ -12,6 +12,7 @@ const {
   assign,
   curry
 } = require('lodash/fp');
+const { parseErrorToReadableJSON } = require('./dataTransformations');
 const {
   createOrUpdateFile,
   getExistingFile,
