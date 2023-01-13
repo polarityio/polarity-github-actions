@@ -25,6 +25,15 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
     updatePreviousFile: bumpPackageJsonVersionForThisRepo
   });
 
+  await createOrUpdateFile({
+    octokit,
+    orgId,
+    repoName: currentRepo.name,
+    relativePath: 'package-lock.json',
+    updatePreviousFile: bumpPackageJsonVersionForThisRepo
+  });
+
+
   return await bumpPackageJsonVersion(octokit, orgId, allOrgRepos);
 };
 
