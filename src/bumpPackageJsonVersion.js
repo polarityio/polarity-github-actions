@@ -22,7 +22,7 @@ const {
 const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRepos]) => {
   try {
     if (isEmpty(currentRepo)) return;
-    
+
     const packageJsonFileContent = parseJsonFileContent(
       await getExistingFile({
         octokit,
@@ -30,7 +30,6 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
         relativePath: 'package.json'
       })
     );
-
 
     const newVersion = flow(get('version'), bumpSemanticVersion)(packageJsonFileContent);
 
@@ -50,12 +49,6 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
       updatePreviousFile: updateJsonVersion(newVersion)
     });
 
-    console.info({
-      packageJsonFileContent,
-      newVersion,
-      updatePreviousFile: updateJsonVersion(newVersion)(packageJsonFileContent)
-    });
-
     return await bumpPackageJsonVersion(octokit, orgId, allOrgRepos);
   } catch (error) {
     console.info({
@@ -68,9 +61,9 @@ const bumpPackageJsonVersion = async (octokit, orgId, [currentRepo, ...allOrgRep
 const parseJsonFileContent = flow(parseFileContent, JSON.parse);
 
 const updateJsonVersion = curry((version, fileContent) =>
-  flow(assign({ version }), (json) => JSON.stringify(json, null, 2))(
-    fileContent
-  )
+  flow(parseJsonFileContent, assign({ version }), (json) =>
+    JSON.stringify(json, null, 2)
+  )(fileContent)
 );
 
 const bumpSemanticVersion = (originalVersion) =>
