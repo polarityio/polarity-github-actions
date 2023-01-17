@@ -72,7 +72,15 @@ const createOrUpdateFile = async ({
 
     const existingFileSha = get('data.sha', currentFileContent);
 
-    if ((existingFileSha && updatePreviousFile) || newFileContent) {
+    const newFileContentResult =
+      existingFileSha && updatePreviousFile
+        ? updatePreviousFile(currentFileContent)
+        : newFileContent;
+
+    if (
+      ((existingFileSha && updatePreviousFile) || newFileContent) &&
+      newFileContentResult
+    ) {
       await uploadFile(
         octokit,
         orgId,
@@ -80,9 +88,7 @@ const createOrUpdateFile = async ({
         branch,
         relativePath,
         existingFileSha,
-        existingFileSha && updatePreviousFile
-          ? updatePreviousFile(currentFileContent)
-          : newFileContent
+        newFileContentResult
       );
     }
 
