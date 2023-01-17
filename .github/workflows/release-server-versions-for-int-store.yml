@@ -224,11 +224,10 @@ jobs:
 
             ## Downloads
 
-            **Polarity Server 4.2.x**
+            **Polarity Server 4.x**
             - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-12-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-12-version }}.tgz)
             SHA256: ${{ env.polarityNode12ServerReleaseSHA256Hash }}
-
-
+            
             **Polarity Server 5.x**
             - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-18-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-18-version }}.tgz)
             SHA256: ${{ env.Node18PolarityServerReleaseSHA256Hash }}
