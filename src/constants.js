@@ -30,7 +30,14 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'tardis',
   'demo-assets',
   'polarity-integration-utils',
-  'url-unshortener'
+  'url-unshortener',
+  'ion',
+  'template-integration',
+  'odin',
+  'dnd5e',
+  'secureworks-tims',
+  'analyst-history',
+  'analyst-telemetry'
 ];
 
 // Repo names where the config.json will need to be created manually
@@ -38,10 +45,8 @@ const CONFIG_JSON_REPOSITORY_DEPLOY_BLOCK_LIST = [
   'sentinelone',
   'ironnet-collective-defense-portal',
   'threatquotient',
-  'template-integration',
   'cyberchef',
   'maxmind',
-  'ion',
   'misp-warning-lists'
 ];
 
