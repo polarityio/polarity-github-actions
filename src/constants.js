@@ -37,7 +37,18 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'dnd5e',
   'secureworks-tims',
   'analyst-history',
-  'analyst-telemetry'
+  'analyst-telemetry',
+  'poolparty',
+  'diablo3',
+  'style-guide',
+  'polarity-tags',
+  'pastebin-dmps',
+  'cats',
+  'sensitive-data-highlighter',
+  'vz-dhcp-mapper',
+  'greynoise-community',
+  'ioc-submission-template',
+  'generic-rest-sample'
 ];
 
 // Repo names where the config.json will need to be created manually
