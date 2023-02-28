@@ -55,9 +55,9 @@ jobs:
       - name: Create Build
         id: create-build
         run: |
-          npm ci &&
+          npm ci --production &&
           cd .. && 
-          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-12-version }}.tgz" "./${{ github.event.repository.name }}" &&  
+          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-12-version }}.tgz" --dereference "./${{ github.event.repository.name }}" &&  
           echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-12-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
           mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-12-version }}.tgz" ${{ github.event.repository.name }} &&
           cd ${{ github.event.repository.name }}
@@ -128,9 +128,9 @@ jobs:
       - name: Create Build
         id: create-build
         run: |
-          npm ci &&
+          npm ci --omit=dev &&
           cd .. && 
-          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-18-version }}.tgz" "./${{ github.event.repository.name }}" &&  
+          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-18-version }}.tgz" --dereference "./${{ github.event.repository.name }}" &&  
           echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-18-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
           mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-18-version }}.tgz" ${{ github.event.repository.name }} &&
           cd ${{ github.event.repository.name }}
