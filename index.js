@@ -30,8 +30,7 @@ const main = async () => {
 
     const createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
 
-    console.info(JSON.stringify({createdPullRequests}, null, 2));
-    // await mergePullRequest(octokit, orgId, createdPullRequests);
+    await mergePullRequest(octokit, orgId, createdPullRequests);
   } catch (error) {
     core.setFailed(error);
   }
