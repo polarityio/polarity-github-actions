@@ -55,8 +55,9 @@ jobs:
       - name: Create Build
         id: create-build
         run: |
-          npm ci --production &&
           yum -y install rsync &&
+          rsync -version &&
+          npm ci --production &&
           rsync --archive --verbose --copy-links ./node_modules/ ./node_modules_cp/ &&
           rm -r ./node_modules/ &&
           mv ./node_modules_cp/ ./node_modules/ &&
