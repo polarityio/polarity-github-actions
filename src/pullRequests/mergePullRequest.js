@@ -26,7 +26,7 @@ const mergePullRequestFunction =
         await octokit.pulls.merge({
           owner: orgId,
           repo: repoName,
-          pull_number: pullRequest.pull_number,
+          pull_number: pullRequest.number,
           commit_title: 'Creating Release with Dereferenced Symlinks & No Dev Dependencies for Machine Readability'
         })
       );
