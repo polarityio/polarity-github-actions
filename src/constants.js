@@ -48,7 +48,9 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'vz-dhcp-mapper',
   'greynoise-community',
   'ioc-submission-template',
-  'generic-rest-sample'
+  'generic-rest-sample',
+  //Temporary from repos testing has already created a release on
+  'arin'
 ];
 
 // Repo names where the config.json will need to be created manually

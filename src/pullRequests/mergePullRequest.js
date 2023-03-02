@@ -21,18 +21,17 @@ const mergePullRequestFunction =
   ({ repoName, pullRequest }) =>
   async () => {
     try {
-      const data = get(
-        'data',
-        await octokit.pulls.merge({
-          owner: orgId,
-          repo: repoName,
-          pull_number: pullRequest.number,
-          commit_title: 'Creating Release with Dereferenced Symlinks & No Dev Dependencies for Machine Readability'
-        })
-      );
+      await octokit.pulls.merge({
+        owner: orgId,
+        repo: repoName,
+        pull_number: pullRequest.number,
+        commit_title:
+          'Creating Release with Dereferenced Symlinks & No Dev Dependencies for Machine Readability'
+      });
 
-      console.log(JSON.stringify(data, null, 2))
-      console.info(`- Pull Request Merge Success: ${repoName} (${111})`);
+      console.info(
+        `- Pull Request Merge Success: ${repoName} (https://github.com/polarityio/${repoName}/releases)`
+      );
     } catch (error) {
       console.info(`- Pull Request Merge Failed: ${repoName}`);
       console.info({
