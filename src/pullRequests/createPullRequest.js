@@ -28,7 +28,7 @@ const createPullRequest = async (octokit, orgId, allOrgRepos) => {
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const pullRequestCreationFunction of pullRequestCreationFunctions) {
     createdPullRequests.push(await pullRequestCreationFunction());
-    await sleep(75000);
+    // await sleep(75000);
   }
 
   return createdPullRequests;

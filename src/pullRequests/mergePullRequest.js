@@ -12,7 +12,7 @@ const mergePullRequest = async (octokit, orgId, createdPullRequests) => {
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const mergePullRequestFunction of mergePullRequestFunctions) {
     await mergePullRequestFunction();
-    await sleep(75000);
+    // await sleep(75000);
   }
 };
 

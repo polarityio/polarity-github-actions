@@ -54,13 +54,13 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
       - name: Create Build
         id: create-build
+        # yum -y install rsync &&
+        # rsync --version &&
+        # rsync --archive --verbose --copy-links ./node_modules/ ./node_modules_cp/ &&
+        # rm -r ./node_modules/ &&
+        # mv ./node_modules_cp/ ./node_modules/ &&
         run: |
-          yum -y install rsync &&
-          rsync --version &&
-          npm ci --production &&
-          rsync --archive --verbose --copy-links ./node_modules/ ./node_modules_cp/ &&
-          rm -r ./node_modules/ &&
-          mv ./node_modules_cp/ ./node_modules/ &&
+          npm ci --production --no-bin-links &&
           cd .. && 
           tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-12-version }}.tgz" --dereference "./${{ github.event.repository.name }}" &&  
           echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-12-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
@@ -132,11 +132,11 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
       - name: Create Build
         id: create-build
+        # rsync --archive --verbose --copy-links ./node_modules/ ./node_modules_cp/ &&
+        # rm -r ./node_modules/ &&
+        # mv ./node_modules_cp/ ./node_modules/ &&
         run: |
-          npm ci --omit=dev &&
-          rsync --archive --verbose --copy-links ./node_modules/ ./node_modules_cp/ &&
-          rm -r ./node_modules/ &&
-          mv ./node_modules_cp/ ./node_modules/ &&
+          npm ci --omit=dev --no-bin-links &&
           cd .. && 
           tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-18-version }}.tgz" --dereference "./${{ github.event.repository.name }}" &&  
           echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-18-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
