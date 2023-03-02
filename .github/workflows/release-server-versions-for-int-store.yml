@@ -54,11 +54,6 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
       - name: Create Build
         id: create-build
-        # yum -y install rsync &&
-        # rsync --version &&
-        # rsync --archive --verbose --copy-links ./node_modules/ ./node_modules_cp/ &&
-        # rm -r ./node_modules/ &&
-        # mv ./node_modules_cp/ ./node_modules/ &&
         run: |
           npm ci --production --no-bin-links &&
           cd .. && 
@@ -132,9 +127,6 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
       - name: Create Build
         id: create-build
-        # rsync --archive --verbose --copy-links ./node_modules/ ./node_modules_cp/ &&
-        # rm -r ./node_modules/ &&
-        # mv ./node_modules_cp/ ./node_modules/ &&
         run: |
           npm ci --omit=dev --no-bin-links &&
           cd .. && 

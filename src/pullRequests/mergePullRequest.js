@@ -21,8 +21,8 @@ const mergePullRequestFunction =
   ({ repoName, pullRequest }) =>
   async () => {
     try {
-      const html_url = get(
-        'data.html_url',
+      const data = get(
+        'data',
         await octokit.pulls.merge({
           owner: orgId,
           repo: repoName,
@@ -31,9 +31,10 @@ const mergePullRequestFunction =
         })
       );
 
-      console.info(`- Pull Request Initiation Success: ${repoName} (${html_url})`);
+      console.log(JSON.stringify(data, null, 2))
+      console.info(`- Pull Request Merge Success: ${repoName} (${111})`);
     } catch (error) {
-      console.info(`- Pull Request Initiation Failed: ${repoName}`);
+      console.info(`- Pull Request Merge Failed: ${repoName}`);
       console.info({
         repoName,
         err: parseErrorToReadableJSON(error),
