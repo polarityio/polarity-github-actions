@@ -50,7 +50,8 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'ioc-submission-template',
   'generic-rest-sample',
   //Temporary from repos testing has already created a release on
-  'arin'
+  'arin',
+  'urlscan'
 ];
 
 // Repo names where the config.json will need to be created manually
