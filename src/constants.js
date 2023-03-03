@@ -51,7 +51,8 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'generic-rest-sample',
   //Temporary from repos testing has already created a release on
   'arin',
-  'urlscan'
+  'urlscan',
+  'maxmind'
 ];
 
 // Repo names where the config.json will need to be created manually

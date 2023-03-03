@@ -220,7 +220,7 @@ jobs:
           tag_name: ${{steps.package-version.outputs.current-version}}
           body: |
             ## Release Notes
-            Creating Release with Dereferenced Symlinks & No Dev Dependencies for Machine Readability
+            ${{ env.commitLogs }}
 
             ## Downloads
 
