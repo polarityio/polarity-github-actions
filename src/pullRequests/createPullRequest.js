@@ -1,5 +1,5 @@
 const { size, map, get, isEmpty, compact, flow, first } = require('lodash/fp');
-const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
+const { parseErrorToReadableJSON, sleep } = require('../dataTransformations');
 
 const createPullRequest = async (octokit, orgId, allOrgRepos) => {
   const checkForExistingPullRequestFunctions = map(
@@ -24,11 +24,14 @@ const createPullRequest = async (octokit, orgId, allOrgRepos) => {
 
   if (size(pullRequestCreationFunctions)) console.info('\n\nCreating Pull Requests:');
 
+  const createdPullRequests = [];
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const pullRequestCreationFunction of pullRequestCreationFunctions) {
-    await pullRequestCreationFunction();
-    await sleep(75000);
+    createdPullRequests.push(await pullRequestCreationFunction());
+    // await sleep(75000);
   }
+
+  return createdPullRequests;
 };
 
 const getRepoNameWithoutPullRequestFunction =
@@ -69,22 +72,23 @@ const getRepoNameWithoutPullRequestFunction =
 
 const getPullRequestCreationFunction = (octokit, orgId) => (repoName) => async () => {
   try {
-    const html_url = get(
-      'data.html_url',
+    const pullRequest = get(
+      'data',
       await octokit.pulls.create({
         owner: orgId,
         repo: repoName,
-        title: 'Updating Github Actions & Adding config.json',
-        body: '## How to test' + 
-        '- []: Verify Action files are updated and correct' +
-        '- []: Verify `config.json` files are updated and correct' +
-        '  - []: Entity & Custom Types are correct',
+        title:
+          'Creating Release with Dereferenced Symlinks & No Dev Dependencies for Machine Readability',
+        body: '',
         head: 'develop',
         base: 'master'
       })
     );
 
+    const html_url = get('html_url', pullRequest);
     console.info(`- Pull Request Initiation Success: ${repoName} (${html_url})`);
+
+    return { repoName, pullRequest };
   } catch (error) {
     console.info(`- Pull Request Initiation Failed: ${repoName}`);
     console.info({

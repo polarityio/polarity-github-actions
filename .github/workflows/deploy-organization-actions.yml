@@ -23,4 +23,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
           # Add repository_names_for_testing property here
           repository_names_for_testing: |
-            testing-github-actions
+            maxmind
+            urlscan
+            arin
+          # testing-github-actions
+

@@ -5,8 +5,8 @@ const { map, size, get } = require('lodash/fp');
 const getAllReposInOrg = require('./src/getAllReposInOrg');
 const uploadActions = require('./src/uploadActions');
 const createAndUploadConfigJson = require('./src/createAndUploadConfigJson');
-const createPullRequest = require('./src/createPullRequest');
 const increasePackageJsonVersion = require('./src/increasePackageJsonVersion');
+const { createPullRequest, mergePullRequest } = require('./src/pullRequests');
 
 const main = async () => {
   try {
@@ -28,7 +28,9 @@ const main = async () => {
 
     await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
 
-    // await createPullRequest(octokit, orgId, allOrgRepos);
+    const createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
+
+    await mergePullRequest(octokit, orgId, createdPullRequests);
   } catch (error) {
     core.setFailed(error);
   }
