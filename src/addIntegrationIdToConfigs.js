@@ -46,7 +46,15 @@ const addIntegrationIdToConfigs = async (
           `  integrationId: '${uuidForThisRepository}',`,
           ...fileLines.slice(indexOfLineToPutIdBelow)
         ];
-
+        console.info('config.js', JSON.stringify({
+          fileLines,
+          indexOfLineToPutIdBelow,
+          configFileLinesWithId,
+          a:fileLines.slice(0, indexOfLineToPutIdBelow),
+          b:fileLines.slice(indexOfLineToPutIdBelow),
+          c:join('\n', configFileLinesWithId)
+        },null,2))
+        
         return join('\n', configFileLinesWithId);
       }
     });
@@ -64,6 +72,14 @@ const addIntegrationIdToConfigs = async (
           ...fileLines.slice(1)
         ];
 
+        console.info('config.json', JSON.stringify({
+          fileLines,
+          indexOfLineToPutIdBelow,
+          configFileLinesWithId,
+          a:fileLines.slice(0, 1),
+          b:fileLines.slice(1),
+          c:join('\n', configFileLinesWithId)
+        },null,2))
         return join('\n', configFileLinesWithId);
       }
     });
