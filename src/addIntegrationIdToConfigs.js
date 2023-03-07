@@ -11,9 +11,10 @@ const {
   includes,
   assign,
   omit,
-  findIndex
+  findIndex,
+  replace
 } = require('lodash/fp');
-const { parseErrorToReadableJSON } = require('./dataTransformations');
+const { parseErrorToReadableJSON, decodeBase64 } = require('./dataTransformations');
 const {
   createOrUpdateFile,
   getExistingFile,
@@ -38,7 +39,13 @@ const addIntegrationIdToConfigs = async (
       orgId,
       repoName: currentRepo.name,
       relativePath: 'config/config.js',
-      updatePreviousFile: (currentFileContent) => {
+      updatePreviousFile: (currentFile) => {
+        const currentFileContent = flow(
+          get(
+            'data.content'),
+          replace(/\n/g, ''),
+          decodeBase64
+        )(currentFile);
         const fileLines = split('\n', currentFileContent)
         const indexOfLineToPutIdBelow = findIndex(includes('module.exports'), fileLines) + 1;
         const configFileLinesWithId = [
@@ -64,7 +71,14 @@ const addIntegrationIdToConfigs = async (
       orgId,
       repoName: currentRepo.name,
       relativePath: 'config/config.json',
-      updatePreviousFile: (currentFileContent) => {
+      updatePreviousFile: (currentFile) => {
+        const currentFileContent = flow(
+          get(
+            'data.content'),
+          replace(/\n/g, ''),
+          decodeBase64
+        )(currentFile);
+
         const fileLines = split('\n', currentFileContent)
         const configFileLinesWithId = [
           ...fileLines.slice(0, 1),
@@ -74,7 +88,6 @@ const addIntegrationIdToConfigs = async (
 
         console.info('config.json', JSON.stringify({
           fileLines,
-          indexOfLineToPutIdBelow,
           configFileLinesWithId,
           a:fileLines.slice(0, 1),
           b:fileLines.slice(1),
