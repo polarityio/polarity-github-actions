@@ -7,6 +7,15 @@ inputs:
   action_file_names:
     description: 'The file names of all github account that can be found at the root of this Organization that you want to deploy to all repos in the Organization'
     required: true
+  increment_package_json_version:
+    description: 'A toggle for automatically creating Pull Requests for each Repository this Action runs on.'
+    required: false
+  should_auto_create_pull_requests:
+    description: 'A toggle for automatically creating Pull Requests for each Repository this Action runs on.'
+    required: false
+  should_auto_merge_pull_requests:
+    description: 'A toggle for automatically creating Pull Requests for each Repository this Action runs on.'
+    required: false
   repository_names_for_testing:
     description: 'A multi-line string input containing the repository names you wish to test on while developing.'
     required: false
