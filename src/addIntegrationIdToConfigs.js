@@ -8,11 +8,12 @@ const namespaceUuid = 'e7b3f248-b56a-465d-aa88-97e6f87657b5';
 const addIntegrationIdToConfigs = async (
   octokit,
   orgId,
-  [{ name: repoName, ...currentRepo }, ...allOrgRepos]
+  [currentRepo, ...allOrgRepos]
 ) => {
   try {
     if (isEmpty(currentRepo)) return;
 
+    const repoName = currentRepo.name;
     const uuidForThisRepository = uuidv1(repoName, namespaceUuid);
 
     await createOrUpdateFile({
