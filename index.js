@@ -25,14 +25,14 @@ const main = async () => {
 
     // await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
 
-    // await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
+    await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
 
-    // await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
+    await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
     await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos);
-    // const createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
+    const createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
 
 
-    // await mergePullRequest(octokit, orgId, createdPullRequests);
+    await mergePullRequest(octokit, orgId, createdPullRequests);
   } catch (error) {
     core.setFailed(error);
   }
