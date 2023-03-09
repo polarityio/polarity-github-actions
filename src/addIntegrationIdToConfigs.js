@@ -3,7 +3,6 @@ const { parseErrorToReadableJSON, decodeBase64 } = require('./dataTransformation
 const { createOrUpdateFile } = require('./octokitHelpers');
 const { v1: uuidv1 } = require('uuid');
 
-const namespaceUuid = 'e7b3f248-b56a-465d-aa88-97e6f87657b5';
 
 const addIntegrationIdToConfigs = async (
   octokit,
@@ -14,7 +13,7 @@ const addIntegrationIdToConfigs = async (
   try {
     if (isEmpty(currentRepo)) return;
 
-    const uuidForThisRepository = uuidv1(repoName, namespaceUuid);
+    const uuidForThisRepository = uuidv1();
 
     await createOrUpdateFile({
       octokit,

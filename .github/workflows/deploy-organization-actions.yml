@@ -25,8 +25,8 @@ jobs:
           should_auto_merge_pull_requests: false
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
           repository_names_for_testing: |
-            arin
-          # testing-github-actions
+            testing-github-actions
+          # arin
           # maxmind
           # urlscan
 
