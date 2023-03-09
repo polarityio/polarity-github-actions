@@ -10,10 +10,10 @@ const addIntegrationIdToConfigs = async (
   orgId,
   [currentRepo, ...allOrgRepos]
 ) => {
+  const repoName = get('name', currentRepo);
   try {
     if (isEmpty(currentRepo)) return;
 
-    const repoName = currentRepo.name;
     const uuidForThisRepository = uuidv1(repoName, namespaceUuid);
 
     await createOrUpdateFile({
