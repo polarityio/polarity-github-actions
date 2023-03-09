@@ -7,6 +7,7 @@ const uploadActions = require('./src/uploadActions');
 const createAndUploadConfigJson = require('./src/createAndUploadConfigJson');
 const increasePackageJsonVersion = require('./src/increasePackageJsonVersion');
 const { createPullRequest, mergePullRequest } = require('./src/pullRequests');
+const addIntegrationIdToConfigs = require('./src/addIntegrationIdToConfigs');
 
 const main = async () => {
   try {
@@ -24,11 +25,12 @@ const main = async () => {
 
     // await uploadActions(octokit, orgId, allOrgRepos, actionFileNames);
 
-    // await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
+    await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
 
     await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
-
+    await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos);
     const createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
+
 
     await mergePullRequest(octokit, orgId, createdPullRequests);
   } catch (error) {
