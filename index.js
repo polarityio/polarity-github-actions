@@ -11,7 +11,7 @@ const addIntegrationIdToConfigs = require('./src/addIntegrationIdToConfigs');
 
 /** Useful Snippets
  * These are snippets that have been used in the past but aren't used often enough
- * to justify creating an Action File Input Flag (i.e. `core.getInput('<action-file-input>')`)
+ * to justify creating an Action File Input Flag (i.e. `core.getBooleanInput('increment_package_json_version')`)
  * to toggle from the Action File.
  *
  * Initial Creation of the `config/config.json` files:
@@ -28,11 +28,11 @@ const main = async () => {
     console.info('Starting Deploy Organization Actions...\n');
     const orgId = core.getInput('org_id');
     const actionFileNames = core.getMultilineInput('action_file_names');
-    const incrementPackageJsonVersion = core.getInput('increment_package_json_version');
-    const shouldAutoCreatePullRequests = core.getInput(
+    const incrementPackageJsonVersion = core.getBooleanInput('increment_package_json_version');
+    const shouldAutoCreatePullRequests = core.getBooleanInput(
       'should_auto_create_pull_requests'
     );
-    const shouldAutoMergePullRequests = core.getInput('should_auto_merge_pull_requests');
+    const shouldAutoMergePullRequests = core.getBooleanInput('should_auto_merge_pull_requests');
     const repoNamesForTesting = core.getMultilineInput('repository_names_for_testing');
 
     const token = core.getInput('GITHUB_TOKEN');
