@@ -30,7 +30,7 @@ const addIntegrationIdToConfigs = async (
         const fileLines = split('\n', currentFileContent);
         const configFileLinesWithId = [
           ...fileLines.slice(0, 1),
-          `  "integrationId": "${uuidForThisRepository}",`,
+          `  "polarityIntegrationUuid": "${uuidForThisRepository}",`,
           ...fileLines.slice(1)
         ];
 
