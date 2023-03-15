@@ -38,12 +38,12 @@ const addIntegrationIdToConfigs = async (
       }
     });
 
-    console.info(`- Config.json \`integrationId\` Creation Succeeded: ${repoName}`);
+    console.info(`- Config.json \`polarityIntegrationUuid\` Creation Succeeded: ${repoName}`);
 
     return await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos);
   } catch (error) {
     console.info({
-      MESSAGE: `- Config.json \`integrationId\` Creation Failed: ${repoName}`,
+      MESSAGE: `- Config.json \`polarityIntegrationUuid\` Creation Failed: ${repoName}`,
       repoName,
       err: parseErrorToReadableJSON(error)
     });
