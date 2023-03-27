@@ -49,6 +49,11 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'greynoise-community',
   'ioc-submission-template',
   'generic-rest-sample',
+  //In Progress Integrations
+  'zscaler',
+  'alphamountain',
+  'mxtoolbox',
+  'mongodb',
   //Temporary from repos testing has already created a release on
   'arin',
   'urlscan',
