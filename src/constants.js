@@ -53,11 +53,11 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'arin',
   'urlscan',
   'maxmind',
-  // 'virustotal',
-  // 'cve-search',
-  // 'chatgpt',
-  // 'us-cert',
-  // 'exploit-finder',
+  'virustotal',
+  'cve-search',
+  'chatgpt',
+  'us-cert',
+  'exploit-finder',
 ];
 
 // Repo names where the config.json will need to be created manually

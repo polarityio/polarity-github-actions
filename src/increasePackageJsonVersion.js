@@ -22,10 +22,13 @@ const {
 const increasePackageJsonVersion = async (
   octokit,
   orgId,
-  [currentRepo, ...allOrgRepos]
+  [currentRepo, ...allOrgRepos],
+  firstRun = true
 ) => {
   try {
     if (isEmpty(currentRepo)) return;
+
+    if(firstRun) console.info('\n\nIncrementing `package.json` & `package-lock.json` version:')
 
     const newVersion = getIncreasedVersion(
       await getExistingFile({
@@ -51,7 +54,7 @@ const increasePackageJsonVersion = async (
       updatePreviousFile: updateJsonVersion(newVersion)
     });
 
-    return await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
+    return await increasePackageJsonVersion(octokit, orgId, allOrgRepos, false);
   } catch (error) {
     console.info({
       repoName: currentRepo.name,
