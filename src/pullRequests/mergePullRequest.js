@@ -7,12 +7,17 @@ const mergePullRequest = async (octokit, orgId, createdPullRequests) => {
     createdPullRequests
   );
 
-  if (size(mergePullRequestFunctions)) console.info('\n\nMerging Pull Requests:');
+  console.info(
+    size(mergePullRequestFunctions)
+      ? '\n\nMerging Pull Requests:'
+      : '\n\n*** No Pull Requests Found to Merge ***:\n' +
+          '- You may have forgotten to set `should_auto_create_pull_requests: true`'
+  );
 
   // Must run file creation in series due to the common use of the octokit instantiation
   for (const mergePullRequestFunction of mergePullRequestFunctions) {
     await mergePullRequestFunction();
-    // await sleep(75000);
+    await sleep(75000);
   }
 };
 

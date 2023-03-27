@@ -3,17 +3,17 @@ const { parseErrorToReadableJSON, decodeBase64 } = require('./dataTransformation
 const { createOrUpdateFile } = require('./octokitHelpers');
 const { v1: uuidv1 } = require('uuid');
 
-const namespaceUuid = 'e7b3f248-b56a-465d-aa88-97e6f87657b5';
 
 const addIntegrationIdToConfigs = async (
   octokit,
   orgId,
-  [{ name: repoName, ...currentRepo }, ...allOrgRepos]
+  [currentRepo, ...allOrgRepos]
 ) => {
+  const repoName = get('name', currentRepo);
   try {
     if (isEmpty(currentRepo)) return;
 
-    const uuidForThisRepository = uuidv1(repoName, namespaceUuid);
+    const uuidForThisRepository = uuidv1();
 
     await createOrUpdateFile({
       octokit,
@@ -30,7 +30,7 @@ const addIntegrationIdToConfigs = async (
         const fileLines = split('\n', currentFileContent);
         const configFileLinesWithId = [
           ...fileLines.slice(0, 1),
-          `  "integrationId": "${uuidForThisRepository}",`,
+          `  "polarityIntegrationUuid": "${uuidForThisRepository}",`,
           ...fileLines.slice(1)
         ];
 
@@ -38,12 +38,12 @@ const addIntegrationIdToConfigs = async (
       }
     });
 
-    console.info(`- Config.json \`integrationId\` Creation Succeeded: ${repoName}`);
+    console.info(`- Config.json \`polarityIntegrationUuid\` Creation Succeeded: ${repoName}`);
 
     return await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos);
   } catch (error) {
     console.info({
-      MESSAGE: `- Config.json \`integrationId\` Creation Failed: ${repoName}`,
+      MESSAGE: `- Config.json \`polarityIntegrationUuid\` Creation Failed: ${repoName}`,
       repoName,
       err: parseErrorToReadableJSON(error)
     });

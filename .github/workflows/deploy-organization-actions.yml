@@ -20,11 +20,18 @@ jobs:
           action_file_names: |
             run-int-dev-checklist.yml
             release-current-version.yml
+          increment_package_json_version: true
+          should_auto_create_pull_requests: true
+          should_auto_merge_pull_requests: true
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
-          # Add repository_names_for_testing property here
           repository_names_for_testing: |
-            arin
-          # testing-github-actions
+            virustotal
+            cve-search
+            chatgpt
+            us-cert
+            exploit-finder
+          # arin
           # maxmind
           # urlscan
+          # testing-github-actions
 

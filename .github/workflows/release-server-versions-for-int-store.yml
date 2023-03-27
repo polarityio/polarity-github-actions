@@ -218,10 +218,11 @@ jobs:
         with:
           name: ${{steps.package-version.outputs.current-version}}
           tag_name: ${{steps.package-version.outputs.current-version}}
-          # - Creating Release with Dereferenced Symlinks & No Dev Dependencies for Machine Readability
           body: |
             ## Release Notes
-            ${{ env.commitLogs }}
+            - Updated Release with Dereferenced Symlinks for New Server compatibility
+            - Updated Release to not contain Dev Dependencies
+            - Added `polarityIntegrationUuid` for independent tracking of integrations from GitHub
 
             ## Downloads
 
