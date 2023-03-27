@@ -7,12 +7,15 @@ const { v1: uuidv1 } = require('uuid');
 const addIntegrationIdToConfigs = async (
   octokit,
   orgId,
-  [currentRepo, ...allOrgRepos]
+  [currentRepo, ...allOrgRepos],
+  firstRun = true
 ) => {
   const repoName = get('name', currentRepo);
   try {
     if (isEmpty(currentRepo)) return;
-
+    
+    if(firstRun) console.info('\n\nAdding `polarityIntegrationUuid` to `config.json`:')
+        
     const uuidForThisRepository = uuidv1();
 
     await createOrUpdateFile({
@@ -40,7 +43,7 @@ const addIntegrationIdToConfigs = async (
 
     console.info(`- Config.json \`polarityIntegrationUuid\` Creation Succeeded: ${repoName}`);
 
-    return await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos);
+    return await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos, false);
   } catch (error) {
     console.info({
       MESSAGE: `- Config.json \`polarityIntegrationUuid\` Creation Failed: ${repoName}`,

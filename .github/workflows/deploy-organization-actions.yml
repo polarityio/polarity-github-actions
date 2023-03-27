@@ -24,12 +24,12 @@ jobs:
           should_auto_create_pull_requests: true
           should_auto_merge_pull_requests: true
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
-          repository_names_for_testing: |
-            virustotal
-            cve-search
-            chatgpt
-            us-cert
-            exploit-finder
+          # repository_names_for_testing: |
+          #   virustotal
+          #   cve-search
+          #   chatgpt
+          #   us-cert
+          #   exploit-finder
           # arin
           # maxmind
           # urlscan
