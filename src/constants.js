@@ -49,8 +49,10 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'greynoise-community',
   'ioc-submission-template',
   'generic-rest-sample',
+  'microsoft-teams',
   //In Progress Integrations
-  'zscaler',
+  'trendmicro-xdr', //main manual check
+  'zscalar',
   'alphamountain',
   'mxtoolbox',
   'mongodb',

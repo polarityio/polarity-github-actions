@@ -26,14 +26,15 @@ const main = async () => {
     /** Add one-off functions to run here */
 
     /** Feature Flagged Features */
-    if (core.getBooleanInput('increment_package_json_version'))
-      await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
+    // if (core.getBooleanInput('increment_package_json_version'))
+    //   await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
 
-    let createdPullRequests = [];
-    if (core.getBooleanInput('should_auto_create_pull_requests'))
-      createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
+    // let createdPullRequests = [];
+    // if (core.getBooleanInput('should_auto_create_pull_requests'))
+    //   createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
 
-    if (core.getBooleanInput('should_auto_merge_pull_requests'))
+    const createdPullRequests = []
+    // if (core.getBooleanInput('should_auto_merge_pull_requests'))
       await mergePullRequest(octokit, orgId, createdPullRequests);
   } catch (error) {
     core.setFailed(error);
