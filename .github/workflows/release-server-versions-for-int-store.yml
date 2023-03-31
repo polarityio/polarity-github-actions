@@ -220,9 +220,7 @@ jobs:
           tag_name: ${{steps.package-version.outputs.current-version}}
           body: |
             ## Release Notes
-            - Updated Release with Dereferenced Symlinks for New Server compatibility
-            - Updated Release to not contain Dev Dependencies
-            - Added `polarityIntegrationUuid` for independent tracking of integrations from GitHub
+            ${{ env.commitLogs }}
 
             ## Downloads
 

@@ -1,20 +1,18 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { map, size, get } = require('lodash/fp');
+const { map, size } = require('lodash/fp');
 
 const getAllReposInOrg = require('./src/getAllReposInOrg');
 const uploadActions = require('./src/uploadActions');
-const createAndUploadConfigJson = require('./src/createAndUploadConfigJson');
 const increasePackageJsonVersion = require('./src/increasePackageJsonVersion');
 const { createPullRequest, mergePullRequest } = require('./src/pullRequests');
-const addIntegrationIdToConfigs = require('./src/addIntegrationIdToConfigs');
 
 const main = async () => {
   try {
     console.info('Starting Deploy Organization Actions...\n');
     const token = core.getInput('GITHUB_TOKEN');
     const octokit = github.getOctokit(token);
-    
+
     const orgId = core.getInput('org_id');
     const actionFileNames = core.getMultilineInput('action_file_names');
     const repoNamesForTesting = core.getMultilineInput('repository_names_for_testing');
@@ -24,7 +22,6 @@ const main = async () => {
       : await getAllReposInOrg(octokit, orgId);
 
     /** Add one-off functions to run here */
-    await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos);
 
     /** Feature Flagged Features */
     if (core.getBooleanInput('increment_package_json_version'))
@@ -48,6 +45,9 @@ const main = async () => {
  *
  * Initial Creation of the `config/config.json` files:
  * await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
+ *  
+ * Initial Creation of the `polarityIntegrationUuid` field in the `config/config.json`:
+ * await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos);
  *
  * When making changes to the values of the GitHub Action Files
  * that Exist on Each Repository:

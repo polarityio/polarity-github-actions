@@ -49,15 +49,8 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'greynoise-community',
   'ioc-submission-template',
   'generic-rest-sample',
-  //Temporary from repos testing has already created a release on
-  'arin',
-  'urlscan',
-  'maxmind',
-  'virustotal',
-  'cve-search',
-  'chatgpt',
-  'us-cert',
-  'exploit-finder',
+  'microsoft-teams',
+  'trendmicro-xdr'
 ];
 
 // Repo names where the config.json will need to be created manually
