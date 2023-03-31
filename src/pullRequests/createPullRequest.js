@@ -78,7 +78,7 @@ const getPullRequestCreationFunction = (octokit, orgId) => (repoName) => async (
         owner: orgId,
         repo: repoName,
         title:
-          'Creating Release with Dereferenced Symlinks, `polarityIntegrationUuid`, & No Dev Dependencies for Machine Readability',
+          'TODO',
         body: '',
         head: 'develop',
         //TODO Adapt to main branch as well

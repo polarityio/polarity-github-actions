@@ -1,13 +1,11 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { map, size, get, flow, filter, join } = require('lodash/fp');
+const { map, size } = require('lodash/fp');
 
 const getAllReposInOrg = require('./src/getAllReposInOrg');
 const uploadActions = require('./src/uploadActions');
-const createAndUploadConfigJson = require('./src/createAndUploadConfigJson');
 const increasePackageJsonVersion = require('./src/increasePackageJsonVersion');
 const { createPullRequest, mergePullRequest } = require('./src/pullRequests');
-const addIntegrationIdToConfigs = require('./src/addIntegrationIdToConfigs');
 
 const main = async () => {
   try {
@@ -26,15 +24,14 @@ const main = async () => {
     /** Add one-off functions to run here */
 
     /** Feature Flagged Features */
-    // if (core.getBooleanInput('increment_package_json_version'))
-    //   await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
+    if (core.getBooleanInput('increment_package_json_version'))
+      await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
 
-    // let createdPullRequests = [];
-    // if (core.getBooleanInput('should_auto_create_pull_requests'))
-    //   createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
+    let createdPullRequests = [];
+    if (core.getBooleanInput('should_auto_create_pull_requests'))
+      createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
 
-    const createdPullRequests = []
-    // if (core.getBooleanInput('should_auto_merge_pull_requests'))
+    if (core.getBooleanInput('should_auto_merge_pull_requests'))
       await mergePullRequest(octokit, orgId, createdPullRequests);
   } catch (error) {
     core.setFailed(error);
@@ -51,7 +48,6 @@ const main = async () => {
  *  
  * Initial Creation of the `polarityIntegrationUuid` field in the `config/config.json`:
  * await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos);
-
  *
  * When making changes to the values of the GitHub Action Files
  * that Exist on Each Repository:

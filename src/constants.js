@@ -50,21 +50,7 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'ioc-submission-template',
   'generic-rest-sample',
   'microsoft-teams',
-  //In Progress Integrations
-  'trendmicro-xdr', //main manual check
-  'zscalar',
-  'alphamountain',
-  'mxtoolbox',
-  'mongodb',
-  //Temporary from repos testing has already created a release on
-  'arin',
-  'urlscan',
-  'maxmind',
-  'virustotal',
-  'cve-search',
-  'chatgpt',
-  'us-cert',
-  'exploit-finder',
+  'trendmicro-xdr'
 ];
 
 // Repo names where the config.json will need to be created manually
