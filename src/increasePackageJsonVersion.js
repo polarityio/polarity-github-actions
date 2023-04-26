@@ -10,7 +10,9 @@ const {
   join,
   includes,
   assign,
-  omit
+  omit,
+  map,
+  size
 } = require('lodash/fp');
 const { parseErrorToReadableJSON } = require('./dataTransformations');
 const {

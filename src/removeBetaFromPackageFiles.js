@@ -11,7 +11,9 @@ const {
   includes,
   assign,
   omit,
-  replace
+  replace,
+  map,
+  size
 } = require('lodash/fp');
 const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
 const {
