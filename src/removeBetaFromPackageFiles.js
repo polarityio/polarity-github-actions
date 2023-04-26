@@ -39,7 +39,7 @@ const removeBetaFromPackageFiles = async (octokit, orgId, allOrgRepos) => {
   }
 };
 
-const getRemoveBetaIfExistsFunction = (octokit, orgId) => (repoName) => async () => {
+const getRemoveBetaIfExistsFunction = (octokit, orgId) => ({ name: repoName }) => async () => {
   try {
     const version = getVersion(
       await getExistingFile({

@@ -36,12 +36,12 @@ const increasePackageJsonVersion = async (octokit, orgId, allOrgRepos) => {
   }
 };
 
-const getIncrementPackageVersionFunction = (octokit, orgId) => (repoName) => async () => {
+const getIncrementPackageVersionFunction = (octokit, orgId) => ({ name: repoName }) => async () => {
   try {
     const newVersion = getIncreasedVersion(
       await getExistingFile({
         octokit,
-        repoName: currentRepo.name,
+        repoName,
         relativePath: 'package.json'
       })
     );
@@ -49,7 +49,7 @@ const getIncrementPackageVersionFunction = (octokit, orgId) => (repoName) => asy
     await createOrUpdateFile({
       octokit,
       orgId,
-      repoName: currentRepo.name,
+      repoName,
       relativePath: 'package.json',
       updatePreviousFile: updateJsonVersion(newVersion)
     });
@@ -57,7 +57,7 @@ const getIncrementPackageVersionFunction = (octokit, orgId) => (repoName) => asy
     await createOrUpdateFile({
       octokit,
       orgId,
-      repoName: currentRepo.name,
+      repoName,
       relativePath: 'package-lock.json',
       updatePreviousFile: updateJsonVersion(newVersion)
     });
