@@ -40,10 +40,8 @@ const removeBetaFromPackageFiles = async (
       })
     );
 
-    console.info({ version, isGood:includes('-beta', version) });
     if (includes('-beta', version)) {
       const newVersion = replace('-beta', '', version);
-      console.info({ newVersion });
 
       await createOrUpdateFile({
         octokit,
