@@ -12,12 +12,12 @@ const {
   toLower,
   first
 } = require('lodash/fp');
-const { CONFIG_JSON_REPOSITORY_DEPLOY_BLOCK_LIST } = require('./constants');
+const { CONFIG_JSON_REPOSITORY_DEPLOY_BLOCK_LIST } = require('../constants');
 const {
   decodeBase64,
   encodeBase64,
   parseErrorToReadableJSON
-} = require('./dataTransformations');
+} = require('../dataTransformations');
 
 const createAndUploadConfigJson = async (octokit, orgId, allOrgRepos) => {
   const fileCreationFunctions = flow(

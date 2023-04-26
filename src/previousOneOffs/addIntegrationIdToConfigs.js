@@ -1,6 +1,6 @@
 const { get, isEmpty, flow, split, join, replace } = require('lodash/fp');
-const { parseErrorToReadableJSON, decodeBase64 } = require('./dataTransformations');
-const { createOrUpdateFile } = require('./octokitHelpers');
+const { parseErrorToReadableJSON, decodeBase64 } = require('../dataTransformations');
+const { createOrUpdateFile } = require('../octokitHelpers');
 const { v1: uuidv1 } = require('uuid');
 
 

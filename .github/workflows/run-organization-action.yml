@@ -1,4 +1,4 @@
-name: Deploy Organization Actions
+name: Run Organization Actions
 
 on:
   push:
@@ -6,17 +6,16 @@ on:
     branches: [master]
 
 jobs:
-  deploy-organization-actions:
+  run-organization-actions:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
-      - name: Deploy Actions To All Repositories In Organization
-        id: deploy_actions
+      - name: Make Changes to Multiple Organization Repositories
+        id: change_repos
         uses: ./
         with:
-          org_id: polarityio
           action_file_names: |
             run-int-dev-checklist.yml
             release-current-version.yml
