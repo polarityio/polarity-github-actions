@@ -48,6 +48,7 @@ const getRemoveBetaIfExistsFunction =
   async () => {
     try {
       const asdf = await getExistingFile({
+        orgId,
         octokit,
         repoName,
         relativePath: 'package.json'
