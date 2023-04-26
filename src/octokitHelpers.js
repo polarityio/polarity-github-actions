@@ -93,6 +93,7 @@ const createOrUpdateFile = async ({
         newFileContentResult
       );
     }
+    console.info({currentFileContent, newFileContentResult});
 
     const htmlUrl = get('data.html_url', currentFileContent);
     console.info(
