@@ -18,12 +18,12 @@ const main = async () => {
     const actionFileNames = core.getMultilineInput('action_file_names');
     const repoNamesForTesting = core.getMultilineInput('repository_names_for_testing');
 
-    const allOrgRepos = size(repoNamesForTesting)
+    let allOrgRepos = size(repoNamesForTesting)
       ? map((name) => ({ name }), repoNamesForTesting)
       : await getAllReposInOrg(octokit, orgId);
 
     /** Add one-off functions to run here */
-    await removeBetaFromPackageFiles(octokit, orgId, allOrgRepos);
+    allOrgRepos = await removeBetaFromPackageFiles(octokit, orgId, allOrgRepos);
 
     /** Feature Flagged Features */
     if (core.getBooleanInput('increment_package_json_version'))
