@@ -6,6 +6,7 @@ const getAllReposInOrg = require('./src/getAllReposInOrg');
 const uploadActions = require('./src/uploadActions');
 const increasePackageJsonVersion = require('./src/increasePackageJsonVersion');
 const { createPullRequest, mergePullRequest } = require('./src/pullRequests');
+const removeBetaFromPackageFiles = require('./src/removeBetaFromPackageFiles');
 
 const main = async () => {
   try {
@@ -22,6 +23,7 @@ const main = async () => {
       : await getAllReposInOrg(octokit, orgId);
 
     /** Add one-off functions to run here */
+    await removeBetaFromPackageFiles(octokit, orgId, allOrgRepos);
 
     /** Feature Flagged Features */
     if (core.getBooleanInput('increment_package_json_version'))

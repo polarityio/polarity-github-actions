@@ -5,6 +5,8 @@ const {
   decodeBase64
 } = require('./dataTransformations');
 
+// API Reference https://octokit.github.io/rest.js/v19
+
 const getExistingFile = async ({
   octokit,
   orgId = 'polarityio',

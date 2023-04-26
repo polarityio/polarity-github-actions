@@ -3,7 +3,7 @@ name: Run Organization Actions
 on:
   push:
     # Target develop branch for testing & updates
-    branches: [master]
+    branches: [develop]
 
 jobs:
   run-organization-actions:
@@ -25,4 +25,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
           repository_names_for_testing: |
             testing-github-actions
-

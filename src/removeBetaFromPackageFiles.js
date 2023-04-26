@@ -1,0 +1,54 @@
+const {
+  get,
+  isEmpty,
+  flow,
+  first,
+  split,
+  set,
+  parseInt,
+  last,
+  join,
+  includes,
+  assign,
+  omit
+} = require('lodash/fp');
+const { parseErrorToReadableJSON } = require('./dataTransformations');
+const {
+  createOrUpdateFile,
+  getExistingFile,
+  parseFileContent
+} = require('./octokitHelpers');
+
+const removeBetaFromPackageFiles = async (
+  octokit,
+  orgId,
+  [currentRepo, ...allOrgRepos],
+  firstRun = true
+) => {
+  try {
+    if (isEmpty(currentRepo)) return;
+
+    if (firstRun)
+      console.info(
+        '\n\n Removing `-beta` from `package.json` & `package-lock.json` version:'
+      );
+
+    const packageJson = await getExistingFile({
+      octokit,
+      orgId,
+      repoName: currentRepo.name,
+      branch: 'develop',
+      relativePath: 'package.json'
+    });
+
+    console.log({ packageJson });
+    return await removeBetaFromPackageFiles(octokit, orgId, allOrgRepos, false);
+  } catch (error) {
+    console.info({
+      repoName: currentRepo.name,
+      err: parseErrorToReadableJSON(error)
+    });
+  }
+};
+
+module.exports = removeBetaFromPackageFiles;
