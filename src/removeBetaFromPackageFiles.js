@@ -33,11 +33,11 @@ const removeBetaFromPackageFiles = async (
         'Removing `-beta` from `package.json` & `package-lock.json` version:'
       );
 
-    const packageJson = await getExistingFile({
+    const packageJson = parseFileContent(await getExistingFile({
       octokit,
       repoName: currentRepo.name,
       relativePath: 'package.json'
-    });
+    }));
 
     console.info({packageJson})
 
