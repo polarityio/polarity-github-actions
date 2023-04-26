@@ -16,6 +16,7 @@ jobs:
         id: change_repos
         uses: ./
         with:
+          org_id: polarityio
           action_file_names: |
             run-int-dev-checklist.yml
             release-current-version.yml
