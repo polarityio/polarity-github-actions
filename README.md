@@ -1,6 +1,8 @@
 # Polarity Github Actions
 This repo contains the ability to alter the files of all repositories in the Polarity Github Organization. One use case, for example being, the ability to publish all of our Github Actions we want to use in our Organization, along with the ability to publish them to all repos in the Organization via the Action found in the *[deploy-organization-actions.yml](./.github/workflows/deploy-organization-actions.yml)* file. 
 
+> ***NOTE:*** Video instructions of how to use this repository to make similar file changes and releases for one to all integration repositories can be found at https://youtu.be/JLN8aMn-JZY
+
 ## Current Individual Repo Actions
 
 - ### Release Current Version ([release-current-version.yml](./src/individualRepoActions/release-current-version.yml))
