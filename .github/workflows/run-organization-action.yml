@@ -3,7 +3,7 @@ name: Run Organization Actions
 on:
   push:
     # Target develop branch for testing & updates
-    branches: [develop]
+    branches: [master]
 
 jobs:
   run-organization-actions:
@@ -22,14 +22,14 @@ jobs:
             release-current-version.yml
           increment_package_json_version: true
           should_auto_create_pull_requests: true
-          should_auto_merge_pull_requests: false
+          should_auto_merge_pull_requests: true
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
           repository_names_for_testing: |
-            virustotal
-            exploit-finder
-            chatgpt
             riskiq
             wikipedia
+            threatstream
+            pipl
+            microsoft-sentinel
         # testing-github-actions
         # test-int-for-actions
         # cve-search
