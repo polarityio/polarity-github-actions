@@ -37,9 +37,10 @@ const removeBetaFromPackageFiles = async (
       octokit,
       repoName: currentRepo.name,
       relativePath: 'package.json'
-    })
+    });
 
-    console.log({ packageJson });
+    console.info({packageJson})
+
     return await removeBetaFromPackageFiles(octokit, orgId, allOrgRepos, false);
   } catch (error) {
     console.info({
