@@ -30,16 +30,14 @@ const removeBetaFromPackageFiles = async (
 
     if (firstRun)
       console.info(
-        '\n\n Removing `-beta` from `package.json` & `package-lock.json` version:'
+        'Removing `-beta` from `package.json` & `package-lock.json` version:'
       );
 
     const packageJson = await getExistingFile({
       octokit,
-      orgId,
       repoName: currentRepo.name,
-      branch: 'develop',
       relativePath: 'package.json'
-    });
+    })
 
     console.log({ packageJson });
     return await removeBetaFromPackageFiles(octokit, orgId, allOrgRepos, false);
