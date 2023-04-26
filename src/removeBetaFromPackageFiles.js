@@ -69,8 +69,9 @@ const removeBetaFromPackageFiles = async (
     });
   }
 };
+const parseJsonFileContent = flow(parseFileContent, JSON.parse);
 
-const getVersion = flow(parseFileContent, JSON.parse, get('version'));
+const getVersion = flow(parseJsonFileContent, get('version'));
 
 const updateJsonVersion = (version) => (fileValue) =>
   flow(
