@@ -24,7 +24,6 @@ const {
 } = require('./octokitHelpers');
 
 const removeBetaFromPackageFiles = async (octokit, orgId, allOrgRepos) => {
-  console.info({allOrgRepos})
   const removeBetaIfExistsFunctions = map(
     getRemoveBetaIfExistsFunction(octokit, orgId),
     allOrgRepos
@@ -48,16 +47,13 @@ const getRemoveBetaIfExistsFunction =
   ({ name: repoName, ...repo }) =>
   async () => {
     try {
-      const asdf = await getExistingFile({
-        orgId,
-        octokit,
-        repoName,
-        relativePath: 'package.json'
-      })
-
-      console.info({asdf,repoName, repo})
       const version = getVersion(
-        asdf
+        await getExistingFile({
+          orgId,
+          octokit,
+          repoName,
+          relativePath: 'package.json'
+        })
       );
 
       if (!includes('-beta', version))
