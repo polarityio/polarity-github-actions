@@ -74,7 +74,7 @@ const uploadActionFile = (octokit, orgId, repoName, actionFileName, existingFile
     ...(existingFileSha && { sha: existingFileSha }),
 
     message: `Updated Github Action: ${actionFileName}`,
-    content: fs.readFileSync(`./src/${actionFileName}`, 'base64'),
+    content: fs.readFileSync(`./src/individualRepoActions/${actionFileName}`, 'base64'),
     committer: {
       name: orgId,
       email: 'info@polarity.io'

@@ -78,7 +78,7 @@ const getPullRequestCreationFunction = (octokit, orgId) => (repoName) => async (
         owner: orgId,
         repo: repoName,
         title:
-          'TODO',
+          'Removing `-beta` from `version` field in `package.json` & `package-lock.json`',
         body: '',
         head: 'develop',
         //TODO Adapt to main branch as well
