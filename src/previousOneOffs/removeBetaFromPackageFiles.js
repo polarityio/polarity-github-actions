@@ -16,12 +16,12 @@ const {
   size,
   compact
 } = require('lodash/fp');
-const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
+const { parseErrorToReadableJSON, sleep } = require('../dataTransformations');
 const {
   createOrUpdateFile,
   getExistingFile,
   parseFileContent
-} = require('./octokitHelpers');
+} = require('../octokitHelpers');
 
 const removeBetaFromPackageFiles = async (octokit, orgId, allOrgRepos) => {
   const removeBetaIfExistsFunctions = map(

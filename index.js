@@ -3,10 +3,8 @@ const github = require('@actions/github');
 const { map, size } = require('lodash/fp');
 
 const getAllReposInOrg = require('./src/getAllReposInOrg');
-const uploadActions = require('./src/uploadActions');
 const increasePackageJsonVersion = require('./src/increasePackageJsonVersion');
 const { createPullRequest, mergePullRequest } = require('./src/pullRequests');
-const removeBetaFromPackageFiles = require('./src/removeBetaFromPackageFiles');
 
 const main = async () => {
   try {
@@ -23,7 +21,6 @@ const main = async () => {
       : await getAllReposInOrg(octokit, orgId);
 
     /** Add one-off functions to run here */
-    allOrgRepos = await removeBetaFromPackageFiles(octokit, orgId, allOrgRepos);
 
     /** Feature Flagged Features */
     if (core.getBooleanInput('increment_package_json_version'))
@@ -45,11 +42,6 @@ const main = async () => {
  * to justify creating an Action File Input Flag (i.e. `core.getBooleanInput('increment_package_json_version')`)
  * to toggle from the Action File.
  *
- * Initial Creation of the `config/config.json` files:
- * await createAndUploadConfigJson(octokit, orgId, allOrgRepos);
- *  
- * Initial Creation of the `polarityIntegrationUuid` field in the `config/config.json`:
- * await addIntegrationIdToConfigs(octokit, orgId, allOrgRepos);
  *
  * When making changes to the values of the GitHub Action Files
  * that Exist on Each Repository:
