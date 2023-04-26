@@ -19,17 +19,23 @@ const {
   parseFileContent
 } = require('./octokitHelpers');
 
-const increasePackageJsonVersion = async (
-  octokit,
-  orgId,
-  [currentRepo, ...allOrgRepos],
-  firstRun = true
-) => {
+const increasePackageJsonVersion = async (octokit, orgId, allOrgRepos) => {
+  const incrementPackageVersionFunctions = map(
+    getIncrementPackageVersionFunction(octokit, orgId),
+    allOrgRepos
+  );
+
+  if (size(incrementPackageVersionFunctions))
+    console.info('\n\nIncrementing `package.json` & `package-lock.json` version:');
+
+  // Must run file creation in series due to the common use of the octokit instantiation
+  for (const incrementPackageVersionFunction of incrementPackageVersionFunctions) {
+    await incrementPackageVersionFunction();
+  }
+};
+
+const getIncrementPackageVersionFunction = (octokit, orgId) => (repoName) => async () => {
   try {
-    if (isEmpty(currentRepo)) return;
-
-    if(firstRun) console.info('\n\nIncrementing `package.json` & `package-lock.json` version:')
-
     const newVersion = getIncreasedVersion(
       await getExistingFile({
         octokit,
@@ -54,12 +60,19 @@ const increasePackageJsonVersion = async (
       updatePreviousFile: updateJsonVersion(newVersion)
     });
 
-    return await increasePackageJsonVersion(octokit, orgId, allOrgRepos, false);
+    console.info(`- Successfully Incremented from package.json version (${repoName})\n`);
   } catch (error) {
+    console.info(`- Incrementing package.json version Failed: ${repoName}`);
     console.info({
-      repoName: currentRepo.name,
-      err: parseErrorToReadableJSON(error)
+      repoName,
+      err: parseErrorToReadableJSON(error),
+      errRequest: parseErrorToReadableJSON(error.request || {}),
+      errHeaders: parseErrorToReadableJSON(error.headers || {})
     });
+
+    if (error.status === 403) {
+      throw new Error('Hit Rate Limit. Stopping Action...');
+    }
   }
 };
 

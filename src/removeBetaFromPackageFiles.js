@@ -13,60 +13,77 @@ const {
   omit,
   replace
 } = require('lodash/fp');
-const { parseErrorToReadableJSON } = require('./dataTransformations');
+const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
 const {
   createOrUpdateFile,
   getExistingFile,
   parseFileContent
 } = require('./octokitHelpers');
 
-const removeBetaFromPackageFiles = async (
-  octokit,
-  orgId,
-  [currentRepo, ...allOrgRepos],
-  firstRun = true
-) => {
+const removeBetaFromPackageFiles = async (octokit, orgId, allOrgRepos) => {
+  const removeBetaIfExistsFunctions = map(
+    getRemoveBetaIfExistsFunction(octokit, orgId),
+    allOrgRepos
+  );
+
+  if (size(removeBetaIfExistsFunctions))
+    console.info(
+      '\n\nRemoving `-beta` from `package.json` & `package-lock.json` version:'
+    );
+
+  // Must run file creation in series due to the common use of the octokit instantiation
+  for (const removeBetaIfExistsFunction of removeBetaIfExistsFunctions) {
+    await removeBetaIfExistsFunction();
+  }
+};
+
+const getRemoveBetaIfExistsFunction = (octokit, orgId) => (repoName) => async () => {
   try {
-    if (isEmpty(currentRepo)) return;
-
-    if (firstRun)
-      console.info('Removing `-beta` from `package.json` & `package-lock.json` version:');
-
     const version = getVersion(
       await getExistingFile({
         octokit,
-        repoName: currentRepo.name,
+        repoName,
         relativePath: 'package.json'
       })
     );
 
-    if (includes('-beta', version)) {
-      const newVersion = replace('-beta', '', version);
+    if (!includes('-beta', version))
+      return console.info(`- No \`-beta\` found in package.json: ${repoName}`);
 
-      await createOrUpdateFile({
-        octokit,
-        orgId,
-        repoName: currentRepo.name,
-        relativePath: 'package.json',
-        updatePreviousFile: updateJsonVersion(newVersion)
-      });
+    const newVersion = replace('-beta', '', version);
 
-      await createOrUpdateFile({
-        octokit,
-        orgId,
-        repoName: currentRepo.name,
-        relativePath: 'package-lock.json',
-        updatePreviousFile: updateJsonVersion(newVersion)
-      });
-    }
-    return await removeBetaFromPackageFiles(octokit, orgId, allOrgRepos, false);
-  } catch (error) {
-    console.info({
-      repoName: currentRepo.name,
-      err: parseErrorToReadableJSON(error)
+    await createOrUpdateFile({
+      octokit,
+      orgId,
+      repoName,
+      relativePath: 'package.json',
+      updatePreviousFile: updateJsonVersion(newVersion)
     });
+
+    await createOrUpdateFile({
+      octokit,
+      orgId,
+      repoName,
+      relativePath: 'package-lock.json',
+      updatePreviousFile: updateJsonVersion(newVersion)
+    });
+
+    console.info(`- Successfully removed \`-beta\` from package.json (${repoName})\n`);
+  } catch (error) {
+    console.info(`- Removing \`-beta\` from package.json Failed: ${repoName}`);
+    console.info({
+      repoName,
+      err: parseErrorToReadableJSON(error),
+      errRequest: parseErrorToReadableJSON(error.request || {}),
+      errHeaders: parseErrorToReadableJSON(error.headers || {})
+    });
+
+    if (error.status === 403) {
+      throw new Error('Hit Rate Limit. Stopping Action...');
+    }
   }
 };
+
 const parseJsonFileContent = flow(parseFileContent, JSON.parse);
 
 const getVersion = flow(parseJsonFileContent, get('version'));
