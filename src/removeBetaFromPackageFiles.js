@@ -47,12 +47,15 @@ const getRemoveBetaIfExistsFunction =
   ({ name: repoName, ...repo }) =>
   async () => {
     try {
+      const asdf = await getExistingFile({
+        octokit,
+        repoName,
+        relativePath: 'package.json'
+      })
+
+      console.info({asdf})
       const version = getVersion(
-        await getExistingFile({
-          octokit,
-          repoName,
-          relativePath: 'package.json'
-        })
+        asdf
       );
 
       if (!includes('-beta', version))
