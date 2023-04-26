@@ -50,7 +50,8 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'ioc-submission-template',
   'generic-rest-sample',
   'microsoft-teams',
-  'trendmicro-xdr'
+  'trendmicro-xdr',
+  'opencv'
 ];
 
 // Repo names where the config.json will need to be created manually

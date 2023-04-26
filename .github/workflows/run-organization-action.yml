@@ -20,18 +20,9 @@ jobs:
           action_file_names: |
             run-int-dev-checklist.yml
             release-current-version.yml
-          increment_package_json_version: true
-          should_auto_create_pull_requests: true
-          should_auto_merge_pull_requests: true
+          increment_package_json_version: false
+          should_auto_create_pull_requests: false
+          should_auto_merge_pull_requests: false
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
           repository_names_for_testing: |
-            riskiq
-            wikipedia
-            threatstream
-            pipl
-            microsoft-sentinel
-        # testing-github-actions
-        # test-int-for-actions
-        # cve-search
-        # chatgpt
-        # us-cert
+            testing-github-actions

@@ -16,12 +16,12 @@ const {
   size,
   compact
 } = require('lodash/fp');
-const { parseErrorToReadableJSON, sleep } = require('./dataTransformations');
+const { parseErrorToReadableJSON, sleep } = require('../dataTransformations');
 const {
   createOrUpdateFile,
   getExistingFile,
   parseFileContent
-} = require('./octokitHelpers');
+} = require('../octokitHelpers');
 
 const removeBetaFromPackageFiles = async (octokit, orgId, allOrgRepos) => {
   const removeBetaIfExistsFunctions = map(
@@ -31,7 +31,7 @@ const removeBetaFromPackageFiles = async (octokit, orgId, allOrgRepos) => {
 
   if (size(removeBetaIfExistsFunctions))
     console.info(
-      '\n\nRemoving `-beta` from `package.json` & `package-lock.json` version:'
+      'Removing `-beta` from `package.json` & `package-lock.json` version:'
     );
 
   const reposWhereBetaWasRemoved = [];
@@ -57,7 +57,7 @@ const getRemoveBetaIfExistsFunction =
       );
 
       if (!includes('-beta', version))
-        return console.info(`- No \`-beta\` found in package.json: ${repoName}`);
+        return console.info(`- No \`beta\` found in package.json version: ${repoName}\n`);
 
       const newVersion = replace('-beta', '', version);
 

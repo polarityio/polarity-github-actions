@@ -22,7 +22,7 @@ const createPullRequest = async (octokit, orgId, allOrgRepos) => {
     reposToCreatePullRequestsOn
   );
 
-  if (size(pullRequestCreationFunctions)) console.info('\n\nCreating Pull Requests:');
+  if (size(pullRequestCreationFunctions)) console.info('Creating Pull Requests:');
 
   const createdPullRequests = [];
   // Must run file creation in series due to the common use of the octokit instantiation
@@ -78,7 +78,7 @@ const getPullRequestCreationFunction = (octokit, orgId) => (repoName) => async (
         owner: orgId,
         repo: repoName,
         title:
-          'Removing `-beta` from `version` field in `package.json` & `package-lock.json`',
+          'TODO',
         body: '',
         head: 'develop',
         //TODO Adapt to main branch as well

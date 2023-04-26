@@ -1,6 +1,5 @@
-const { size, map, get, isEmpty, compact, flow, first } = require('lodash/fp');
+const { size, map, flow, join, concat } = require('lodash/fp');
 const { parseErrorToReadableJSON, sleep } = require('../dataTransformations');
-
 
 const mergePullRequest = async (octokit, orgId, createdPullRequests) => {
   const mergePullRequestFunctions = map(
@@ -52,5 +51,26 @@ const mergePullRequestFunction =
       }
     }
   };
+
+const getUnmergedRepos = () => {
+  const fs = require('fs');
+
+  const unmergedRepos = JSON.parse(
+    fs.readFileSync('src/pullRequests/unmerged-pull-requests.json', 'utf8')
+  );
+
+  console.info(
+    flow(
+      map(
+        ({ repoName, pullRequest: { number } }) =>
+          `https://github.com/polarityio/${repoName}/pull/${number}`
+      ),
+      concat('\nUnmerged Pull Requests:'),
+      join('\n')
+    )(unmergedRepos)
+  );
+
+  return unmergedRepos;
+};
 
 module.exports = mergePullRequest;

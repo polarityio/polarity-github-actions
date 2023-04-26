@@ -220,7 +220,7 @@ jobs:
           tag_name: ${{steps.package-version.outputs.current-version}}
           body: |
             ## Release Notes
-            - Removing `-beta` from `version` field in `package.json` & `package-lock.json`
+            ${{ env.commitLogs }}
 
             ## Downloads
 
