@@ -10,7 +10,7 @@ const removeBetaFromPackageFiles = require('./src/removeBetaFromPackageFiles');
 
 const main = async () => {
   try {
-    console.info('Starting Deploy Organization Actions...\n');
+    console.info('Running Organization Actions...\n');
     const token = core.getInput('GITHUB_TOKEN');
     const octokit = github.getOctokit(token);
 

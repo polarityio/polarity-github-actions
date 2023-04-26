@@ -3,7 +3,7 @@ name: Run Organization Actions
 on:
   push:
     # Target develop branch for testing & updates
-    branches: [master]
+    branches: [develop]
 
 jobs:
   run-organization-actions:
@@ -24,12 +24,12 @@ jobs:
           should_auto_create_pull_requests: true
           should_auto_merge_pull_requests: true
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
-          repository_names_for_testing: |
-            riskiq
-            wikipedia
-            threatstream
-            pipl
-            microsoft-sentinel
+          # repository_names_for_testing: |
+          #   riskiq
+          #   wikipedia
+          #   threatstream
+          #   pipl
+          #   microsoft-sentinel
         # testing-github-actions
         # test-int-for-actions
         # cve-search
