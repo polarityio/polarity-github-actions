@@ -43,6 +43,7 @@ const createRemoveRejectUnauthorizedFromConfigFileFunction =
       repo
     );
 
+    console.info('\n');
     return [].concat(configJsChangedRepos).concat(configJsonChangedRepos);
   };
 

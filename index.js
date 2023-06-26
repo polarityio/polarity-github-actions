@@ -21,6 +21,7 @@ const main = async () => {
       ? map((name) => ({ name }), repoNamesForTesting)
       : await getAllReposInOrg(octokit, orgId);
 
+      console.info({allOrgRepos})
     /** Add one-off functions to run here */
     const changedRepos = await removeRejectUnauthorizedFromConfigFiles(octokit, orgId, allOrgRepos)
     /** Feature Flagged Features */
