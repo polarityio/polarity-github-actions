@@ -22,9 +22,8 @@ const main = async () => {
       ? await Promise.all(map(getRepository(octokit, orgId), repoNamesForTesting))
       : await getAllReposInOrg(octokit, orgId);
 
-      console.info({allOrgRepos})
     /** Add one-off functions to run here */
-    // const changedRepos = await removeRejectUnauthorizedFromConfigFiles(octokit, orgId, allOrgRepos)
+    const changedRepos = await removeRejectUnauthorizedFromConfigFiles(octokit, orgId, allOrgRepos)
     /** Feature Flagged Features */
     if (core.getBooleanInput('increment_package_json_version'))
       await increasePackageJsonVersion(octokit, orgId, changedRepos);

@@ -21,7 +21,7 @@ jobs:
             run-int-dev-checklist.yml
             release-current-version.yml
           increment_package_json_version: false
-          should_auto_create_pull_requests: false
+          should_auto_create_pull_requests: true
           should_auto_merge_pull_requests: false
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
           repository_names_for_testing: |
