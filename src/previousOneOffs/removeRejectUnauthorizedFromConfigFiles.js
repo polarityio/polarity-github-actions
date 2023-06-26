@@ -69,7 +69,7 @@ const removeRejectUnauthorizedFromConfigFile = async (
 
     if (rejectUnauthorizedNotFound)
       return console.info(
-        `- No \`rejectUnauthorized: <boolean>\` found in \`${configFileName}\`: ${repoName}\n`
+        `- No \`rejectUnauthorized: <boolean>\` found in \`${configFileName}\`: ${repoName}`
       );
 
     const configFileWithoutRejectUnauthorized = replace(
@@ -87,7 +87,7 @@ const removeRejectUnauthorizedFromConfigFile = async (
     });
 
     console.info(
-      `- Successfully removed \`rejectUnauthorized: <boolean>\` from \`${configFileName}\` (${repoName})\n`
+      `- Successfully removed \`rejectUnauthorized: <boolean>\` from \`${configFileName}\` (${repoName})`
     );
 
     return {
