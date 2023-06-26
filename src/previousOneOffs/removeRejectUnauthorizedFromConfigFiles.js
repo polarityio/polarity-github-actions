@@ -1,4 +1,4 @@
-const { flow, replace, map, size, compact, flatten } = require('lodash/fp');
+const { flow, replace, map, size, compact, flatten, uniqBy } = require('lodash/fp');
 const { parseErrorToReadableJSON } = require('../dataTransformations');
 const {
   createOrUpdateFile,
@@ -24,7 +24,7 @@ const removeRejectUnauthorizedFromConfigFiles = async (octokit, orgId, allOrgRep
       await removeRejectUnauthorizedFromConfigFileFunction()
     );
   }
-  return flow(compact, flatten)(reposWithRemovedRejectUnauthorizedFromConfigFile);
+  return flow(compact, flatten, uniqBy('name'))(reposWithRemovedRejectUnauthorizedFromConfigFile);
 };
 
 const createRemoveRejectUnauthorizedFromConfigFileFunction =
