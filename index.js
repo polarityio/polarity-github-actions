@@ -2,7 +2,8 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const { map, size } = require('lodash/fp');
 
-const getAllReposInOrg = require('./src/getAllReposInOrg');
+const getAllReposInOrg = require('./src/repositories/getAllReposInOrg');
+const getRepository = require('./src/repositories/getRepository');
 const increasePackageJsonVersion = require('./src/increasePackageJsonVersion');
 const { createPullRequest, mergePullRequest } = require('./src/pullRequests');
 const removeRejectUnauthorizedFromConfigFiles = require('./src/previousOneOffs/removeRejectUnauthorizedFromConfigFiles');
@@ -18,12 +19,12 @@ const main = async () => {
     const repoNamesForTesting = core.getMultilineInput('repository_names_for_testing');
 
     let allOrgRepos = size(repoNamesForTesting)
-      ? map((name) => ({ name }), repoNamesForTesting)
+      ? await Promise.all(map(getRepository(octokit, orgId), repoNamesForTesting))
       : await getAllReposInOrg(octokit, orgId);
 
       console.info({allOrgRepos})
     /** Add one-off functions to run here */
-    const changedRepos = await removeRejectUnauthorizedFromConfigFiles(octokit, orgId, allOrgRepos)
+    // const changedRepos = await removeRejectUnauthorizedFromConfigFiles(octokit, orgId, allOrgRepos)
     /** Feature Flagged Features */
     if (core.getBooleanInput('increment_package_json_version'))
       await increasePackageJsonVersion(octokit, orgId, changedRepos);

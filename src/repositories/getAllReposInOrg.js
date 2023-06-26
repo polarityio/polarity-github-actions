@@ -1,5 +1,5 @@
 const fp = require('lodash/fp');
-const { REPOSITORY_DEPLOY_BLOCK_LIST } = require('./constants');
+const { REPOSITORY_DEPLOY_BLOCK_LIST } = require('../constants');
 
 const getAllReposInOrg = async (octokit, orgId, pageNumber = 1, agg = []) => {
   const repos = fp.getOr(
