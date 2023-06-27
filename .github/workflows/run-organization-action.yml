@@ -3,7 +3,7 @@ name: Run Organization Actions
 on:
   push:
     # Target develop branch for testing & updates
-    branches: [master]
+    branches: [develop]
 
 jobs:
   run-organization-actions:
@@ -24,5 +24,5 @@ jobs:
           should_auto_create_pull_requests: true
           should_auto_merge_pull_requests: false
           GITHUB_TOKEN: ${{ secrets.POLARITY_ACTIONS_DEPLOY }}
-          # repository_names_for_testing: |
-          #   testing-github-actions
+          repository_names_for_testing: |
+            cortex-xsoar
