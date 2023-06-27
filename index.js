@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { map, size } = require('lodash/fp');
+const { map, size, join } = require('lodash/fp');
 
 const getAllReposInOrg = require('./src/repositories/getAllReposInOrg');
 const getRepository = require('./src/repositories/getRepository');
