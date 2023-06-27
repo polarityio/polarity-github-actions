@@ -36,7 +36,7 @@ const createPullRequest = async (octokit, orgId, allOrgRepos) => {
 
 const getRepoNameWithoutPullRequestFunction =
   (octokit, orgId) =>
-  ({ name: repoName }) =>
+  ({ name: repoName, ...repo }) =>
   async () => {
     try {
       const pullRequests = get(
@@ -50,7 +50,7 @@ const getRepoNameWithoutPullRequestFunction =
 
       const openPullRequestsExist = !isEmpty(pullRequests);
 
-      if (!openPullRequestsExist) return repoName;
+      if (!openPullRequestsExist) return { name: repoName, ...repo };
 
       const html_url = flow(first, get('html_url'))(pullRequests);
 
@@ -70,19 +70,17 @@ const getRepoNameWithoutPullRequestFunction =
     }
   };
 
-const getPullRequestCreationFunction = (octokit, orgId) => (repoName) => async () => {
+const getPullRequestCreationFunction = (octokit, orgId) => ({ name: repoName, default_branch }) => async () => {
   try {
     const pullRequest = get(
       'data',
       await octokit.pulls.create({
         owner: orgId,
         repo: repoName,
-        title:
-          'TODO',
+        title: 'Removing rejectUnauthorized from config files',
         body: '',
         head: 'develop',
-        //TODO Adapt to main branch as well
-        base: 'master'
+        base: default_branch
       })
     );
 

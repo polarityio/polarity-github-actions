@@ -8,8 +8,6 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'polarity-github-actions',
   'polarity-integration-development-checklist',
   'securonix',
-  'tenable-io',
-  'microsoft-defender',
   'polarity-cli-integration-search',
   'polarity-node-rest-api',
   'node-dig-dns',
@@ -21,7 +19,6 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'polarity-user-creation',
   'polarityio.github.io',
   'worldtradingdata',
-  'wikipedia',
   'demo-asset',
   'active-directory',
   'screenshotmachine',
@@ -51,7 +48,9 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'generic-rest-sample',
   'microsoft-teams',
   'trendmicro-xdr',
-  'opencv'
+  'opencv',
+  // Already did release for test on removing rejectUnauthorized.  Remove once mass deployment for that change has finished
+  'cortex-xsoar'
 ];
 
 // Repo names where the config.json will need to be created manually
