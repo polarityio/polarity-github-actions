@@ -33,6 +33,8 @@ const removeRejectUnauthorizedFromConfigFiles = async (octokit, orgId, allOrgRep
 
 const createRemoveRejectUnauthorizedFromConfigFileFunction =
   (octokit, orgId) => (repo) => async () => {
+    console.info('\n' + repo.name);
+
     const configJsChangedRepos = await removeRejectUnauthorizedFromConfigFile(
       'config.js',
       octokit,
@@ -57,7 +59,6 @@ const removeRejectUnauthorizedFromConfigFile = async (
   { name: repoName, ...repo }
 ) => {
   try {
-    console.info('\n' + repoName);
     const configFile = parseFileContent(
       await getExistingFile({
         orgId,

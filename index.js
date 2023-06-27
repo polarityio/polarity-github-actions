@@ -22,18 +22,24 @@ const main = async () => {
       ? await Promise.all(map(getRepository(octokit, orgId), repoNamesForTesting))
       : await getAllReposInOrg(octokit, orgId);
 
-    console.log(join('\n', map('name', allOrgRepos)))
-    /** Add one-off functions to run here */
-    const changedRepos = await removeRejectUnauthorizedFromConfigFiles(octokit, orgId, allOrgRepos)
+    console.info(`Number of Repos Found: ${size(allOrgRepos)}`);
+    console.info(`Running on:\n${join(', ', map('name', allOrgRepos))}`);
 
-    console.info(JSON.stringify(changedRepos, null, 2))
+    /** Add one-off functions to run here */
+    // const changedRepos = await removeRejectUnauthorizedFromConfigFiles(
+    //   octokit,
+    //   orgId,
+    //   allOrgRepos
+    // );
+
+    // console.info(JSON.stringify(changedRepos, null, 2));
     /** Feature Flagged Features */
     if (core.getBooleanInput('increment_package_json_version'))
-      await increasePackageJsonVersion(octokit, orgId, changedRepos);
+      await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
 
     let createdPullRequests = [];
     if (core.getBooleanInput('should_auto_create_pull_requests'))
-      createdPullRequests = await createPullRequest(octokit, orgId, changedRepos);
+      createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
 
     if (core.getBooleanInput('should_auto_merge_pull_requests'))
       await mergePullRequest(octokit, orgId, createdPullRequests);

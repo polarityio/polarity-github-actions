@@ -21,8 +21,6 @@ const getAllReposInOrg = async (octokit, orgId, pageNumber = 1, agg = []) => {
       agg.concat(repos)
     );
 
-    console.info('Number of Repos Found: ', fp.size(allReposInOrg));
-
     return allReposInOrg;
   }
 
