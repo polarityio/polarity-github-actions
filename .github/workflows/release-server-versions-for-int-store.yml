@@ -218,10 +218,9 @@ jobs:
         with:
           name: ${{steps.package-version.outputs.current-version}}
           tag_name: ${{steps.package-version.outputs.current-version}}
-            # ${{ env.commitLogs }}
           body: |
             ## Release Notes
-            - Removing rejectUnauthorized from config files
+            ${{ env.commitLogs }}
             
             ## Downloads
 

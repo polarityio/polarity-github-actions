@@ -24,11 +24,17 @@ const removeRejectUnauthorizedFromConfigFiles = async (octokit, orgId, allOrgRep
       await removeRejectUnauthorizedFromConfigFileFunction()
     );
   }
-  return flow(compact, flatten, uniqBy('name'))(reposWithRemovedRejectUnauthorizedFromConfigFile);
+  return flow(
+    compact,
+    flatten,
+    uniqBy('name')
+  )(reposWithRemovedRejectUnauthorizedFromConfigFile);
 };
 
 const createRemoveRejectUnauthorizedFromConfigFileFunction =
   (octokit, orgId) => (repo) => async () => {
+    console.info('\n' + repo.name);
+
     const configJsChangedRepos = await removeRejectUnauthorizedFromConfigFile(
       'config.js',
       octokit,
@@ -43,7 +49,6 @@ const createRemoveRejectUnauthorizedFromConfigFileFunction =
       repo
     );
 
-    console.info('\n');
     return [].concat(configJsChangedRepos).concat(configJsonChangedRepos);
   };
 

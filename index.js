@@ -1,12 +1,11 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { map, size } = require('lodash/fp');
+const { map, size, join } = require('lodash/fp');
 
 const getAllReposInOrg = require('./src/repositories/getAllReposInOrg');
 const getRepository = require('./src/repositories/getRepository');
 const increasePackageJsonVersion = require('./src/increasePackageJsonVersion');
 const { createPullRequest, mergePullRequest } = require('./src/pullRequests');
-const removeRejectUnauthorizedFromConfigFiles = require('./src/previousOneOffs/removeRejectUnauthorizedFromConfigFiles');
 
 const main = async () => {
   try {
@@ -22,15 +21,18 @@ const main = async () => {
       ? await Promise.all(map(getRepository(octokit, orgId), repoNamesForTesting))
       : await getAllReposInOrg(octokit, orgId);
 
+    console.info(`Number of Repos Found: ${size(allOrgRepos)}`);
+    console.info(`Running on:\n${join(', ', map('name', allOrgRepos))}`);
+
     /** Add one-off functions to run here */
-    const changedRepos = await removeRejectUnauthorizedFromConfigFiles(octokit, orgId, allOrgRepos)
+
     /** Feature Flagged Features */
     if (core.getBooleanInput('increment_package_json_version'))
-      await increasePackageJsonVersion(octokit, orgId, changedRepos);
+      await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
 
     let createdPullRequests = [];
     if (core.getBooleanInput('should_auto_create_pull_requests'))
-      createdPullRequests = await createPullRequest(octokit, orgId, changedRepos);
+      createdPullRequests = await createPullRequest(octokit, orgId, allOrgRepos);
 
     if (core.getBooleanInput('should_auto_merge_pull_requests'))
       await mergePullRequest(octokit, orgId, createdPullRequests);
