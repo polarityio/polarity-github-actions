@@ -6,7 +6,6 @@ const getAllReposInOrg = require('./src/repositories/getAllReposInOrg');
 const getRepository = require('./src/repositories/getRepository');
 const increasePackageJsonVersion = require('./src/increasePackageJsonVersion');
 const { createPullRequest, mergePullRequest } = require('./src/pullRequests');
-const removeRejectUnauthorizedFromConfigFiles = require('./src/previousOneOffs/removeRejectUnauthorizedFromConfigFiles');
 
 const main = async () => {
   try {
@@ -26,13 +25,7 @@ const main = async () => {
     console.info(`Running on:\n${join(', ', map('name', allOrgRepos))}`);
 
     /** Add one-off functions to run here */
-    // const changedRepos = await removeRejectUnauthorizedFromConfigFiles(
-    //   octokit,
-    //   orgId,
-    //   allOrgRepos
-    // );
 
-    // console.info(JSON.stringify(changedRepos, null, 2));
     /** Feature Flagged Features */
     if (core.getBooleanInput('increment_package_json_version'))
       await increasePackageJsonVersion(octokit, orgId, allOrgRepos);
