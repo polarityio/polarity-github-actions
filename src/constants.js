@@ -28,6 +28,12 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'polarity-integration-utils',
 
   // No Longer Supported Integrations
+  'dnd5e',
+  'cats',
+  'diablo3',
+  'ion',
+  'odin',
+  'tardis',
   'trendmicro-xdr',
   'worldtradingdata',
   'polarity-tags',
@@ -43,13 +49,7 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'analyst-telemetry',
   'analyst-history',
   'arcsight',
-
-  'dnd5e',
-  'cats',
-  'diablo3',
-  'ion',
-  'odin',
-  'tardis',
+  'shodan-enterprise', 
 
   // Half Started Repos
   'microsoft-teams',
@@ -57,8 +57,7 @@ const REPOSITORY_DEPLOY_BLOCK_LIST = [
   'Polarity-Platform',
 
   // Know issues with creating auto releases for these repos.  Check if the issues have been resolve and remove from this list if they have.
-  'shodan-enterprise', // Issue with installing --no-bin-links with sqlite3 package
-  'h-isac-taxii-feeds', // Issue with installing --no-bin-links with pouch-db package
+  'h-isac-taxii-feeds', // Issue with installing --no-bin-links with pouch-db package. Ticket being made to fix this issue.
 
   // In Progress.  Remove once a release has occurred
   'google-bard',
