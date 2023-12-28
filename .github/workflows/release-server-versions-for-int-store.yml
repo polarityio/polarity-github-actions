@@ -46,7 +46,7 @@ jobs:
     container: ${{ inputs.node-polarity-servers-container-version }}
     steps:
       - name: Install Git LFS
-        run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | sudo bash && yum install git-lfs -y
+        run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash && yum install git-lfs -y
       - uses: actions/checkout@v2
         with:
           lfs: true
