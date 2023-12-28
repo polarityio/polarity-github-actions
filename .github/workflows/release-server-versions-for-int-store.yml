@@ -45,6 +45,12 @@ jobs:
     runs-on: ${{ inputs.node-polarity-server-os-version }}
     container: ${{ inputs.node-polarity-servers-container-version }}
     steps:
+      - name: Install Git 2.36
+        run: |
+          yum remove git -y
+          yum install -y https://repo.ius.io/ius-release-el7.rpm
+          yum install -y git236
+          git --version
       - name: Install Git LFS
         run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash && yum install git-lfs -y
       - uses: actions/checkout@v2
