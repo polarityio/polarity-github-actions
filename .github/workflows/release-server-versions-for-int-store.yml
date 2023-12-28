@@ -45,6 +45,8 @@ jobs:
     runs-on: ${{ inputs.node-polarity-server-os-version }}
     container: ${{ inputs.node-polarity-servers-container-version }}
     steps:
+      - name: Install Git LFS
+        run: yum install git-lfs -y
       - uses: actions/checkout@v2
         with:
           lfs: true
