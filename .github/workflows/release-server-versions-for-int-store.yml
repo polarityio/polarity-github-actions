@@ -50,6 +50,8 @@ jobs:
       # installs a newer version of Git (2.36) and Git LFS.
       - name: Install Git 2.36
         run: yum install git -y
+      - name: Install Git LFS
+        run: yum install git-lfs -y
       # run: |
       #  yum remove git -y
       #    yum install -y https://repo.ius.io/ius-release-el7.rpm
