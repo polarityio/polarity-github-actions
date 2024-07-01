@@ -28,7 +28,7 @@ on:
         description: 'The Container Version for both the Node 12 and 14 Polarity Node Servers'
         required: false
         type: string
-        default: centos:8
+        default: rockylinux:8
       elixir-server-os-version:
         description: 'The Node Version for the Polarity Elixir Server Version'
         required: false
