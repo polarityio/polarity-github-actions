@@ -48,9 +48,10 @@ jobs:
       # The CentOS 7 image used for this container has an older version of Git (1.8.3) which is not
       # compatible with the latest version of Git LFS.  This step removes the old version of Git and
       # installs a newer version of Git (2.36) and Git LFS.
-      #- name: Install Git 2.36
-      #  run: |
-      #    yum remove git -y
+      - name: Install Git 2.36
+        run: yum install git
+      # run: |
+      #  yum remove git -y
       #    yum install -y https://repo.ius.io/ius-release-el7.rpm
       #    yum install -y git236
       #    git --version
