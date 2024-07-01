@@ -28,7 +28,7 @@ on:
         description: 'The Container Version for both the Node 12 and 14 Polarity Node Servers'
         required: false
         type: string
-        default: centos:7
+        default: centos:8
       elixir-server-os-version:
         description: 'The Node Version for the Polarity Elixir Server Version'
         required: false
@@ -48,16 +48,16 @@ jobs:
       # The CentOS 7 image used for this container has an older version of Git (1.8.3) which is not
       # compatible with the latest version of Git LFS.  This step removes the old version of Git and
       # installs a newer version of Git (2.36) and Git LFS.
-      - name: Install Git 2.36
-        run: |
-          yum remove git -y
-          yum install -y https://repo.ius.io/ius-release-el7.rpm
-          yum install -y git236
-          git --version
+      #- name: Install Git 2.36
+      #  run: |
+      #    yum remove git -y
+      #    yum install -y https://repo.ius.io/ius-release-el7.rpm
+      #    yum install -y git236
+      #    git --version
       # The CentOS 7 image used for this container does not include git-lfs so we need to manually install it before
       # running the checkout action with `lfs: true` set.
-      - name: Install Git LFS
-        run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash && yum install git-lfs -y
+      #- name: Install Git LFS
+      #  run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash && yum install git-lfs -y
       - uses: actions/checkout@v2
         with:
           lfs: true
