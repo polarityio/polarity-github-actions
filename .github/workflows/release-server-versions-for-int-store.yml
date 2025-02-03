@@ -77,12 +77,12 @@ jobs:
         run: |
           echo "${{ env.buildHash }}" > polarityNode12ServerReleaseSHA256Hash.txt
       - name: Upload polarityNode12ServerReleaseSHA256Hash
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: polarityNode12ServerReleaseSHA256Hash
           path: polarityNode12ServerReleaseSHA256Hash.txt
       - name: Upload polarityNode12ServerReleaseZip
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: polarityNode12ServerReleaseZip
           path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.node-12-version }}.tgz
@@ -111,12 +111,12 @@ jobs:
   #       run: |
   #         echo "${{ env.buildHash }}" > polarityNode14ServerReleaseSHA256Hash.txt
   #     - name: Upload polarityNode14ServerReleaseSHA256Hash
-  #       uses: actions/upload-artifact@v3
+  #       uses: actions/upload-artifact@v4
   #       with:
   #         name: polarityNode14ServerReleaseSHA256Hash
   #         path: polarityNode14ServerReleaseSHA256Hash.txt
   #     - name: Upload polarityNode14ServerReleaseZip
-  #       uses: actions/upload-artifact@v3
+  #       uses: actions/upload-artifact@v4
   #       with:
   #         name: polarityNode14ServerReleaseZip
   #         path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.node-14-version }}.tgz
@@ -146,12 +146,12 @@ jobs:
         run: |
           echo "${{ env.buildHash }}" > Node18PolarityServerReleaseSHA256Hash.txt
       - name: Upload Node18PolarityServerReleaseSHA256Hash
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Node18PolarityServerReleaseSHA256Hash
           path: Node18PolarityServerReleaseSHA256Hash.txt
       - name: Upload Node18PolarityServerReleaseZip
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Node18PolarityServerReleaseZip
           path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.node-18-version }}.tgz
@@ -174,7 +174,7 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
 
       - name: Download polarityNode12ServerReleaseSHA256Hash
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: polarityNode12ServerReleaseSHA256Hash
       - name: Add polarityNode12ServerReleaseSHA256Hash to ENV for use
@@ -182,7 +182,7 @@ jobs:
           value=`cat polarityNode12ServerReleaseSHA256Hash.txt`
           echo "polarityNode12ServerReleaseSHA256Hash=$value" >> $GITHUB_ENV
       # - name: Download polarityNode14ServerReleaseSHA256Hash
-      #   uses: actions/download-artifact@v3
+      #   uses: actions/download-artifact@v4
       #   with:
       #     name: polarityNode14ServerReleaseSHA256Hash
       # - name: Add polarityNode14ServerReleaseSHA256Hash to ENV for use
@@ -190,7 +190,7 @@ jobs:
       #     value=`cat polarityNode14ServerReleaseSHA256Hash.txt`
       #     echo "polarityNode14ServerReleaseSHA256Hash=$value" >> $GITHUB_ENV
       - name: Download Node18PolarityServerReleaseSHA256Hash
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Node18PolarityServerReleaseSHA256Hash
       - name: Add Node18PolarityServerReleaseSHA256Hash to ENV for use
@@ -199,15 +199,15 @@ jobs:
           echo "Node18PolarityServerReleaseSHA256Hash=$value" >> $GITHUB_ENV
 
       - name: Download polarityNode12ServerReleaseZip
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: polarityNode12ServerReleaseZip
       # - name: Download polarityNode14ServerReleaseZip
-      #   uses: actions/download-artifact@v3
+      #   uses: actions/download-artifact@v4
       #   with:
       #     name: polarityNode14ServerReleaseZip
       - name: Download Node18PolarityServerReleaseZip
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Node18PolarityServerReleaseZip
 
