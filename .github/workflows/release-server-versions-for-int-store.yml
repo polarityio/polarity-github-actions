@@ -33,7 +33,7 @@ on:
         description: 'The Node Version for the Polarity Elixir Server Version'
         required: false
         type: string
-        default: ubuntu-20.04
+        default: ubuntu-22.04
       use-integration-development-checklist:
         description: 'A Flag to disable the integration development checklist requirement to create a release'
         required: false
