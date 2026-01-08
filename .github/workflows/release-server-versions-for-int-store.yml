@@ -14,12 +14,12 @@ on:
         type: string
         default: ubuntu-latest
       node-24-version:
-        description: 'The Node Version for the Polarity Server Version (Node 24)'
+        description: 'Node.js version for Polarity Server 6.x builds'
         required: false
         type: string
         default: '24'
       node-24-os-version:
-        description: 'The OS Version for the Polarity Server Version (Node 24)'
+        description: 'Operating system for Node.js 24 build environment'
         required: false
         type: string
         default: ubuntu-latest
