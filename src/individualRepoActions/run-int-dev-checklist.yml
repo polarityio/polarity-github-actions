@@ -2,9 +2,44 @@ name: Run Integration Development Checklist
 
 on:
   pull_request:
-    branches: [ master, main, develop ]
+    branches: [ master, main, develop, support/v1 ]
 
 jobs:
+  version-safety-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check runtimeVersion compatibility with target branch
+        run: |
+          CONFIG_FILE="config/config.json"
+
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "No config/config.json found — skipping version safety check."
+            exit 0
+          fi
+
+          RUNTIME_VERSION=$(node -p "try { const c = require('./$CONFIG_FILE'); c.runtimeVersion ?? 'undefined' } catch(e) { 'undefined' }" 2>/dev/null || echo "undefined")
+          TARGET_BRANCH="${{ github.base_ref }}"
+
+          echo "Target branch: $TARGET_BRANCH"
+          echo "runtimeVersion: $RUNTIME_VERSION"
+
+          if [ "$TARGET_BRANCH" = "support/v1" ]; then
+            if [ "$RUNTIME_VERSION" = "2" ]; then
+              echo "::error::Cannot merge a v2 integration (runtimeVersion: 2) into the support/v1 branch."
+              exit 1
+            fi
+            echo "Target is support/v1 and runtimeVersion is not 2 — OK."
+          fi
+
+          if [ "$TARGET_BRANCH" = "master" ] || [ "$TARGET_BRANCH" = "main" ]; then
+            if [ "$RUNTIME_VERSION" != "undefined" ] && [ "$RUNTIME_VERSION" != "2" ]; then
+              echo "::error::runtimeVersion is set to '$RUNTIME_VERSION' but must be '2' for merges into $TARGET_BRANCH."
+              exit 1
+            fi
+            echo "Target is $TARGET_BRANCH — runtimeVersion check passed."
+          fi
+
   run-integration-development-checklist:
     runs-on: ubuntu-latest
     container: 'centos:7'
