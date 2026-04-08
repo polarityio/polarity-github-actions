@@ -23,15 +23,15 @@ jobs:
   Node18PolarityServerRelease:
     runs-on: ${{ inputs.elixir-server-os-version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           lfs: true
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-18-version }}
       - name: Get NPM Version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
+        run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
       - name: Create Build
         id: create-build
         run: |
@@ -62,13 +62,13 @@ jobs:
         Node18PolarityServerRelease
       ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
       - name: Get NPM Version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
+        run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Download Node18PolarityServerReleaseSHA256Hash
         uses: actions/download-artifact@v4
@@ -96,7 +96,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
       - name: Create Versioned Release
         id: create-versioned-release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: ${{steps.package-version.outputs.current-version}}
           tag_name: ${{steps.package-version.outputs.current-version}}
