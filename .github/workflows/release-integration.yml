@@ -30,7 +30,7 @@ jobs:
     outputs:
       is_v2: ${{ steps.check-config.outputs.is_v2 }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check for runtimeVersion in config
         id: check-config
         run: |
@@ -60,10 +60,10 @@ jobs:
     if: needs.detect-version.outputs.is_v2 == 'false'
     runs-on: ${{ inputs.os-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           lfs: true
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-version }}
       - name: Get NPM Version
@@ -82,12 +82,12 @@ jobs:
         run: |
           echo "${{ env.buildHash }}" > ReleaseSHA256Hash.txt
       - name: Upload ReleaseSHA256Hash
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ReleaseSHA256Hash
           path: ReleaseSHA256Hash.txt
       - name: Upload ReleaseArchive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ReleaseArchive
           path: ${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
@@ -97,15 +97,15 @@ jobs:
     needs: [detect-version, v1-build]
     if: needs.detect-version.outputs.is_v2 == 'false'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: '0'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
       - name: Get NPM Version
         id: package-version
         run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
       - name: Download ReleaseSHA256Hash
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: ReleaseSHA256Hash
       - name: Add ReleaseSHA256Hash to ENV for use
@@ -113,7 +113,7 @@ jobs:
           value=`cat ReleaseSHA256Hash.txt`
           echo "ReleaseSHA256Hash=$value" >> $GITHUB_ENV
       - name: Download ReleaseArchive
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: ReleaseArchive
       - name: Getting Git Commit Logs Since Last Release
@@ -158,10 +158,10 @@ jobs:
     if: needs.detect-version.outputs.is_v2 == 'true'
     runs-on: ${{ inputs.os-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           lfs: true
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-version }}
       - name: Get NPM Version
@@ -170,13 +170,13 @@ jobs:
       - name: Install Dependencies
         run: |
           npm ci
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-build-version }}
       - name: Build
         run: |
           npm run build
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-version }}
       - name: Reinstall Production Dependencies Only
@@ -194,12 +194,12 @@ jobs:
         run: |
           echo "${{ env.buildHash }}" > ReleaseSHA256Hash.txt
       - name: Upload ReleaseSHA256Hash
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ReleaseSHA256Hash
           path: ReleaseSHA256Hash.txt
       - name: Upload ReleaseArchive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ReleaseArchive
           path: ${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
@@ -209,15 +209,15 @@ jobs:
     needs: [detect-version, v2-build]
     if: needs.detect-version.outputs.is_v2 == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: '0'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
       - name: Get NPM Version
         id: package-version
         run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
       - name: Download ReleaseSHA256Hash
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: ReleaseSHA256Hash
       - name: Add ReleaseSHA256Hash to ENV for use
@@ -225,7 +225,7 @@ jobs:
           value=`cat ReleaseSHA256Hash.txt`
           echo "ReleaseSHA256Hash=$value" >> $GITHUB_ENV
       - name: Download ReleaseArchive
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: ReleaseArchive
       - name: Getting Git Commit Logs Since Last Release
