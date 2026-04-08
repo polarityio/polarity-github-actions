@@ -244,7 +244,7 @@ jobs:
           name: ${{ steps.package-version.outputs.current-version }}
           tag_name: ${{ steps.package-version.outputs.current-version }}
           body: |
-            > **This is a v2 integration pre-release.**
+            > **This is a v2 integration framework pre-release.**
 
             ## Release Notes
             ${{ env.commitLogs }}
