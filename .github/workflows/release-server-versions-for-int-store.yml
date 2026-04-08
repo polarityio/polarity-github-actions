@@ -23,15 +23,15 @@ jobs:
   Node18PolarityServerRelease:
     runs-on: ${{ inputs.elixir-server-os-version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           lfs: true
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-18-version }}
       - name: Get NPM Version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
+        run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
       - name: Create Build
         id: create-build
         run: |
@@ -45,12 +45,12 @@ jobs:
         run: |
           echo "${{ env.buildHash }}" > Node18PolarityServerReleaseSHA256Hash.txt
       - name: Upload Node18PolarityServerReleaseSHA256Hash
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Node18PolarityServerReleaseSHA256Hash
           path: Node18PolarityServerReleaseSHA256Hash.txt
       - name: Upload Node18PolarityServerReleaseZip
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Node18PolarityServerReleaseZip
           path: ${{ github.event.repository.name }}-${{steps.package-version.outputs.current-version}}+node-${{ inputs.node-18-version }}.tgz
@@ -62,16 +62,16 @@ jobs:
         Node18PolarityServerRelease
       ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: '0'
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v5
       - name: Get NPM Version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@95bc31c6dd3145896c110e382f840bb1e750d09c
+        run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Download Node18PolarityServerReleaseSHA256Hash
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: Node18PolarityServerReleaseSHA256Hash
 
@@ -81,7 +81,7 @@ jobs:
           echo "Node18PolarityServerReleaseSHA256Hash=$value" >> $GITHUB_ENV
 
       - name: Download Node18PolarityServerReleaseZip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: Node18PolarityServerReleaseZip
 
@@ -96,7 +96,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
       - name: Create Versioned Release
         id: create-versioned-release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: ${{steps.package-version.outputs.current-version}}
           tag_name: ${{steps.package-version.outputs.current-version}}

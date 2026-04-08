@@ -1,0 +1,264 @@
+name: Release Integration
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'The Node version for v1 builds and v2 dependency installation'
+        required: false
+        type: string
+        default: '18'
+      node-build-version:
+        description: 'The Node version used for v2 npm run build'
+        required: false
+        type: string
+        default: '24'
+      os-version:
+        description: 'The OS version for the build runner'
+        required: false
+        type: string
+        default: ubuntu-latest
+      use-integration-development-checklist:
+        description: 'A flag to disable the integration development checklist requirement to create a release'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  detect-version:
+    runs-on: ubuntu-latest
+    outputs:
+      is_v2: ${{ steps.check-config.outputs.is_v2 }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check for runtimeVersion in config
+        id: check-config
+        run: |
+          CONFIG_FILE="config/config.json"
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "is_v2=false" >> $GITHUB_OUTPUT
+            echo "No config/config.json found — using v1 workflow."
+            exit 0
+          fi
+
+          RUNTIME_VERSION=$(node -p "try { const c = require('./$CONFIG_FILE'); c.runtimeVersion ?? 'undefined' } catch(e) { 'undefined' }" 2>/dev/null || echo "undefined")
+
+          if [ "$RUNTIME_VERSION" = "2" ]; then
+            echo "is_v2=true" >> $GITHUB_OUTPUT
+            echo "runtimeVersion is 2 — using v2 workflow."
+          else
+            echo "is_v2=false" >> $GITHUB_OUTPUT
+            echo "runtimeVersion is '$RUNTIME_VERSION' — using v1 workflow."
+          fi
+
+  # ──────────────────────────────────────────────
+  # V1 Build & Release
+  # ──────────────────────────────────────────────
+
+  v1-build:
+    needs: detect-version
+    if: needs.detect-version.outputs.is_v2 == 'false'
+    runs-on: ${{ inputs.os-version }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          lfs: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Get NPM Version
+        id: package-version
+        run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Create Build
+        id: create-build
+        run: |
+          npm ci --omit=dev --no-bin-links &&
+          cd .. && 
+          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" "./${{ github.event.repository.name }}" &&  
+          echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
+          mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" ${{ github.event.repository.name }} &&
+          cd ${{ github.event.repository.name }}
+      - name: Adding SHA256 Hash For Release
+        run: |
+          echo "${{ env.buildHash }}" > ReleaseSHA256Hash.txt
+      - name: Upload ReleaseSHA256Hash
+        uses: actions/upload-artifact@v6
+        with:
+          name: ReleaseSHA256Hash
+          path: ReleaseSHA256Hash.txt
+      - name: Upload ReleaseArchive
+        uses: actions/upload-artifact@v6
+        with:
+          name: ReleaseArchive
+          path: ${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
+
+  v1-release:
+    runs-on: ubuntu-latest
+    needs: [detect-version, v1-build]
+    if: needs.detect-version.outputs.is_v2 == 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: '0'
+      - uses: actions/setup-node@v5
+      - name: Get NPM Version
+        id: package-version
+        run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Download ReleaseSHA256Hash
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseSHA256Hash
+      - name: Add ReleaseSHA256Hash to ENV for use
+        run: |
+          value=`cat ReleaseSHA256Hash.txt`
+          echo "ReleaseSHA256Hash=$value" >> $GITHUB_ENV
+      - name: Download ReleaseArchive
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseArchive
+      - name: Getting Git Commit Logs Since Last Release
+        run: |
+          echo "$(git log $(git tag -l | cat | tail -1)..HEAD --oneline | cat | awk '{$1="-"; print $0}')" > commitLogs.txt
+      - name: Add commitLogs to ENV for use
+        run: |
+          commitLogs=$(cat commitLogs.txt)
+          echo "commitLogs<<EOF" >> $GITHUB_ENV
+          echo "$commitLogs" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - name: Create Versioned Release
+        id: create-versioned-release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.package-version.outputs.current-version }}
+          tag_name: ${{ steps.package-version.outputs.current-version }}
+          body: |
+            ## Release Notes
+            ${{ env.commitLogs }}
+            
+            ## Downloads
+           
+            **Polarity Server 5.x**
+            - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz)
+            SHA256: ${{ env.ReleaseSHA256Hash }}
+          files: |
+            ./${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
+          draft: false
+          prerelease: false
+          make_latest: true
+          generate_release_notes: false
+          append_body: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  # ──────────────────────────────────────────────
+  # V2 Build & Release
+  # ──────────────────────────────────────────────
+
+  v2-build:
+    needs: detect-version
+    if: needs.detect-version.outputs.is_v2 == 'true'
+    runs-on: ${{ inputs.os-version }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          lfs: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Get NPM Version
+        id: package-version
+        run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Install Dependencies
+        run: |
+          npm ci
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ inputs.node-build-version }}
+      - name: Build
+        run: |
+          npm run build
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Reinstall Production Dependencies Only
+        run: |
+          npm ci --omit=dev --no-bin-links
+      - name: Create Build Archive
+        id: create-build
+        run: |
+          cd .. &&
+          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" "./${{ github.event.repository.name }}" &&
+          echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
+          mv "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" ${{ github.event.repository.name }} &&
+          cd ${{ github.event.repository.name }}
+      - name: Adding SHA256 Hash For Release
+        run: |
+          echo "${{ env.buildHash }}" > ReleaseSHA256Hash.txt
+      - name: Upload ReleaseSHA256Hash
+        uses: actions/upload-artifact@v6
+        with:
+          name: ReleaseSHA256Hash
+          path: ReleaseSHA256Hash.txt
+      - name: Upload ReleaseArchive
+        uses: actions/upload-artifact@v6
+        with:
+          name: ReleaseArchive
+          path: ${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
+
+  v2-release:
+    runs-on: ubuntu-latest
+    needs: [detect-version, v2-build]
+    if: needs.detect-version.outputs.is_v2 == 'true'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: '0'
+      - uses: actions/setup-node@v5
+      - name: Get NPM Version
+        id: package-version
+        run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Download ReleaseSHA256Hash
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseSHA256Hash
+      - name: Add ReleaseSHA256Hash to ENV for use
+        run: |
+          value=`cat ReleaseSHA256Hash.txt`
+          echo "ReleaseSHA256Hash=$value" >> $GITHUB_ENV
+      - name: Download ReleaseArchive
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseArchive
+      - name: Getting Git Commit Logs Since Last Release
+        run: |
+          echo "$(git log $(git tag -l | cat | tail -1)..HEAD --oneline | cat | awk '{$1="-"; print $0}')" > commitLogs.txt
+      - name: Add commitLogs to ENV for use
+        run: |
+          commitLogs=$(cat commitLogs.txt)
+          echo "commitLogs<<EOF" >> $GITHUB_ENV
+          echo "$commitLogs" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - name: Create Versioned Release
+        id: create-versioned-release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.package-version.outputs.current-version }}
+          tag_name: ${{ steps.package-version.outputs.current-version }}
+          body: |
+            > **This is a v2 integration framework pre-release.**
+
+            ## Release Notes
+            ${{ env.commitLogs }}
+
+            ## Downloads
+
+            **Polarity Server 5.x (v2 Integration)**
+            - DOWNLOAD: [${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz)
+            SHA256: ${{ env.ReleaseSHA256Hash }}
+          files: |
+            ./${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
+          draft: false
+          prerelease: true
+          make_latest: false
+          generate_release_notes: false
+          append_body: true
+          token: ${{ secrets.GITHUB_TOKEN }}
