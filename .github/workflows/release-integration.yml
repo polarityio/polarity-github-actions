@@ -182,6 +182,7 @@ jobs:
       - name: Remove Dev Dependencies
         run: |
           npm prune --omit=dev
+          rm -rf node_modules/.bin
       - name: Create Build Archive
         id: create-build
         run: |
