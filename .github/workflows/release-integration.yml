@@ -187,7 +187,26 @@ jobs:
         id: create-build
         run: |
           cd .. &&
-          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" "./${{ github.event.repository.name }}" &&
+          tar \
+            --exclude="./${{ github.event.repository.name }}/.git" \
+            --exclude="./${{ github.event.repository.name }}/.gitignore" \
+            --exclude="./${{ github.event.repository.name }}/.github" \
+            --exclude="./${{ github.event.repository.name }}/eslint.config.mjs" \
+            --exclude="./${{ github.event.repository.name }}/vitest.config.ts" \
+            --exclude="./${{ github.event.repository.name }}/tsconfig.json" \
+            --exclude="./${{ github.event.repository.name }}/tsconfig.web.json" \
+            --exclude="./${{ github.event.repository.name }}/vite.config.js" \
+            --exclude="./${{ github.event.repository.name }}/.prettierrc" \
+            --exclude="./${{ github.event.repository.name }}/.prettierignore" \
+            --exclude="./${{ github.event.repository.name }}/package-lock.json" \
+            --exclude="*.js.map" \
+            --exclude="*.d.ts" \
+            --exclude="./${{ github.event.repository.name }}/src" \
+            --exclude="./${{ github.event.repository.name }}/tests" \
+            --exclude="./${{ github.event.repository.name }}/mocks" \
+            --exclude="./${{ github.event.repository.name }}/docs" \
+            --exclude="./${{ github.event.repository.name }}/README.md" \
+            -czvf "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" "./${{ github.event.repository.name }}" &&
           echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
           mv "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" ${{ github.event.repository.name }} &&
           cd ${{ github.event.repository.name }}
