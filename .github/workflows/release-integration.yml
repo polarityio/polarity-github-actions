@@ -4,7 +4,12 @@ on:
   workflow_call:
     inputs:
       node-version:
-        description: 'The Node version for v1 builds and v2 dependency installation'
+        description: 'The Node version for v1 builds'
+        required: false
+        type: string
+        default: '18'
+      node-v2-version:
+        description: 'The Node version for v2 dependency installation'
         required: false
         type: string
         default: '18'
@@ -163,7 +168,7 @@ jobs:
           lfs: true
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: ${{ inputs.node-v2-version }}
       - name: Get NPM Version
         id: package-version
         run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
@@ -178,7 +183,7 @@ jobs:
           npm run build
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: ${{ inputs.node-v2-version }}
       - name: Remove Dev Dependencies
         run: |
           npm prune --omit=dev
@@ -187,9 +192,28 @@ jobs:
         id: create-build
         run: |
           cd .. &&
-          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" "./${{ github.event.repository.name }}" &&
-          echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
-          mv "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" ${{ github.event.repository.name }} &&
+          tar \
+            --exclude="./${{ github.event.repository.name }}/.git" \
+            --exclude="./${{ github.event.repository.name }}/.gitignore" \
+            --exclude="./${{ github.event.repository.name }}/.github" \
+            --exclude="./${{ github.event.repository.name }}/eslint.config.mjs" \
+            --exclude="./${{ github.event.repository.name }}/vitest.config.ts" \
+            --exclude="./${{ github.event.repository.name }}/tsconfig.json" \
+            --exclude="./${{ github.event.repository.name }}/tsconfig.web.json" \
+            --exclude="./${{ github.event.repository.name }}/vite.config.js" \
+            --exclude="./${{ github.event.repository.name }}/.prettierrc" \
+            --exclude="./${{ github.event.repository.name }}/.prettierignore" \
+            --exclude="./${{ github.event.repository.name }}/package-lock.json" \
+            --exclude="*.js.map" \
+            --exclude="*.d.ts" \
+            --exclude="./${{ github.event.repository.name }}/src" \
+            --exclude="./${{ github.event.repository.name }}/tests" \
+            --exclude="./${{ github.event.repository.name }}/mocks" \
+            --exclude="./${{ github.event.repository.name }}/docs" \
+            --exclude="./${{ github.event.repository.name }}/README.md" \
+            -czvf "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz" "./${{ github.event.repository.name }}" &&
+          echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
+          mv "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz" ${{ github.event.repository.name }} &&
           cd ${{ github.event.repository.name }}
       - name: Adding SHA256 Hash For Release
         run: |
@@ -203,7 +227,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: ReleaseArchive
-          path: ${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
+          path: ${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz
 
   v2-release:
     runs-on: ubuntu-latest
@@ -253,10 +277,10 @@ jobs:
             ## Downloads
 
             **Polarity Server 5.x (v2 Integration)**
-            - DOWNLOAD: [${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz)
+            - DOWNLOAD: [${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz)
             SHA256: ${{ env.ReleaseSHA256Hash }}
           files: |
-            ./${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
+            ./${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz
           draft: false
           prerelease: true
           make_latest: false
