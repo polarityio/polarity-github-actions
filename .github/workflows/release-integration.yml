@@ -3,16 +3,11 @@ name: Release Integration
 on:
   workflow_call:
     inputs:
-      node-version:
-        description: 'The Node version for v1 builds'
+      node-versions:
+        description: 'JSON array of Node versions to build (e.g., ["18", "24"])'
         required: false
         type: string
-        default: '18'
-      node-v2-version:
-        description: 'The Node version for v2 dependency installation'
-        required: false
-        type: string
-        default: '18'
+        default: '["18", "24"]'
       node-build-version:
         description: 'The Node version used for v2 npm run build'
         required: false
@@ -64,13 +59,16 @@ jobs:
     needs: detect-version
     if: needs.detect-version.outputs.is_v2 == 'false'
     runs-on: ${{ inputs.os-version }}
+    strategy:
+      matrix:
+        node-version: ${{ fromJson(inputs.node-versions) }}
     steps:
       - uses: actions/checkout@v5
         with:
           lfs: true
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: ${{ matrix.node-version }}
       - name: Get NPM Version
         id: package-version
         run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
@@ -79,9 +77,9 @@ jobs:
         run: |
           npm ci --omit=dev --no-bin-links &&
           cd .. && 
-          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" "./${{ github.event.repository.name }}" &&  
-          echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
-          mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz" ${{ github.event.repository.name }} &&
+          tar --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz" "./${{ github.event.repository.name }}" &&  
+          echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
+          mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz" ${{ github.event.repository.name }} &&
           cd ${{ github.event.repository.name }}
       - name: Adding SHA256 Hash For Release
         run: |
@@ -89,13 +87,13 @@ jobs:
       - name: Upload ReleaseSHA256Hash
         uses: actions/upload-artifact@v6
         with:
-          name: ReleaseSHA256Hash
+          name: ReleaseSHA256Hash-v1-node${{ matrix.node-version }}
           path: ReleaseSHA256Hash.txt
       - name: Upload ReleaseArchive
         uses: actions/upload-artifact@v6
         with:
-          name: ReleaseArchive
-          path: ${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
+          name: ReleaseArchive-v1-node${{ matrix.node-version }}
+          path: ${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz
 
   v1-release:
     runs-on: ubuntu-latest
@@ -109,18 +107,28 @@ jobs:
       - name: Get NPM Version
         id: package-version
         run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-      - name: Download ReleaseSHA256Hash
+      - name: Download Node18 SHA256Hash
         uses: actions/download-artifact@v6
         with:
-          name: ReleaseSHA256Hash
-      - name: Add ReleaseSHA256Hash to ENV for use
+          name: ReleaseSHA256Hash-v1-node18
+          path: hashes/node18
+      - name: Download Node24 SHA256Hash
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseSHA256Hash-v1-node24
+          path: hashes/node24
+      - name: Download Node18 ReleaseArchive
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseArchive-v1-node18
+      - name: Download Node24 ReleaseArchive
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseArchive-v1-node24
+      - name: Add SHA256 Hashes to ENV
         run: |
-          value=`cat ReleaseSHA256Hash.txt`
-          echo "ReleaseSHA256Hash=$value" >> $GITHUB_ENV
-      - name: Download ReleaseArchive
-        uses: actions/download-artifact@v6
-        with:
-          name: ReleaseArchive
+          echo "ReleaseSHA256Hash_node18=$(cat hashes/node18/ReleaseSHA256Hash.txt)" >> $GITHUB_ENV
+          echo "ReleaseSHA256Hash_node24=$(cat hashes/node24/ReleaseSHA256Hash.txt)" >> $GITHUB_ENV
       - name: Getting Git Commit Logs Since Last Release
         run: |
           echo "$(git log $(git tag -l | cat | tail -1)..HEAD --oneline | cat | awk '{$1="-"; print $0}')" > commitLogs.txt
@@ -141,12 +149,21 @@ jobs:
             ${{ env.commitLogs }}
             
             ## Downloads
+
+            ---
            
-            **Polarity Server 5.x**
-            - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz)
-            SHA256: ${{ env.ReleaseSHA256Hash }}
+            **Polarity Server 5.x Node18**
+            - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-18.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-18.tgz)
+            SHA256: ${{ env.ReleaseSHA256Hash_node18 }}
+
+            ---
+
+            **Polarity Server 5.x Node24**
+            - DOWNLOAD: [${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-24.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-24.tgz)
+            SHA256: ${{ env.ReleaseSHA256Hash_node24 }}
           files: |
-            ./${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-version }}.tgz
+            ./${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-18.tgz
+            ./${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-24.tgz
           draft: false
           prerelease: false
           make_latest: true
@@ -162,13 +179,16 @@ jobs:
     needs: detect-version
     if: needs.detect-version.outputs.is_v2 == 'true'
     runs-on: ${{ inputs.os-version }}
+    strategy:
+      matrix:
+        node-version: ${{ fromJson(inputs.node-versions) }}
     steps:
       - uses: actions/checkout@v5
         with:
           lfs: true
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ inputs.node-v2-version }}
+          node-version: ${{ matrix.node-version }}
       - name: Get NPM Version
         id: package-version
         run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
@@ -183,7 +203,7 @@ jobs:
           npm run build
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ inputs.node-v2-version }}
+          node-version: ${{ matrix.node-version }}
       - name: Remove Dev Dependencies
         run: |
           npm prune --omit=dev
@@ -211,9 +231,9 @@ jobs:
             --exclude="./${{ github.event.repository.name }}/mocks" \
             --exclude="./${{ github.event.repository.name }}/docs" \
             --exclude="./${{ github.event.repository.name }}/README.md" \
-            -czvf "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz" "./${{ github.event.repository.name }}" &&
-          echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
-          mv "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz" ${{ github.event.repository.name }} &&
+            -czvf "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz" "./${{ github.event.repository.name }}" &&
+          echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
+          mv "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz" ${{ github.event.repository.name }} &&
           cd ${{ github.event.repository.name }}
       - name: Adding SHA256 Hash For Release
         run: |
@@ -221,13 +241,13 @@ jobs:
       - name: Upload ReleaseSHA256Hash
         uses: actions/upload-artifact@v6
         with:
-          name: ReleaseSHA256Hash
+          name: ReleaseSHA256Hash-v2-node${{ matrix.node-version }}
           path: ReleaseSHA256Hash.txt
       - name: Upload ReleaseArchive
         uses: actions/upload-artifact@v6
         with:
-          name: ReleaseArchive
-          path: ${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz
+          name: ReleaseArchive-v2-node${{ matrix.node-version }}
+          path: ${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz
 
   v2-release:
     runs-on: ubuntu-latest
@@ -241,18 +261,28 @@ jobs:
       - name: Get NPM Version
         id: package-version
         run: echo "current-version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-      - name: Download ReleaseSHA256Hash
+      - name: Download Node18 SHA256Hash
         uses: actions/download-artifact@v6
         with:
-          name: ReleaseSHA256Hash
-      - name: Add ReleaseSHA256Hash to ENV for use
+          name: ReleaseSHA256Hash-v2-node18
+          path: hashes/node18
+      - name: Download Node24 SHA256Hash
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseSHA256Hash-v2-node24
+          path: hashes/node24
+      - name: Download Node18 ReleaseArchive
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseArchive-v2-node18
+      - name: Download Node24 ReleaseArchive
+        uses: actions/download-artifact@v6
+        with:
+          name: ReleaseArchive-v2-node24
+      - name: Add SHA256 Hashes to ENV
         run: |
-          value=`cat ReleaseSHA256Hash.txt`
-          echo "ReleaseSHA256Hash=$value" >> $GITHUB_ENV
-      - name: Download ReleaseArchive
-        uses: actions/download-artifact@v6
-        with:
-          name: ReleaseArchive
+          echo "ReleaseSHA256Hash_node18=$(cat hashes/node18/ReleaseSHA256Hash.txt)" >> $GITHUB_ENV
+          echo "ReleaseSHA256Hash_node24=$(cat hashes/node24/ReleaseSHA256Hash.txt)" >> $GITHUB_ENV
       - name: Getting Git Commit Logs Since Last Release
         run: |
           echo "$(git log $(git tag -l | cat | tail -1)..HEAD --oneline | cat | awk '{$1="-"; print $0}')" > commitLogs.txt
@@ -276,11 +306,20 @@ jobs:
 
             ## Downloads
 
-            **Polarity Server 5.x (v2 Integration)**
-            - DOWNLOAD: [${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz)
-            SHA256: ${{ env.ReleaseSHA256Hash }}
+            ---
+
+            **Polarity Server 5.x (v2 Integration) Node18**
+            - DOWNLOAD: [${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-18.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-18.tgz)
+            SHA256: ${{ env.ReleaseSHA256Hash_node18 }}
+
+            ---
+
+            **Polarity Server 5.x (v2 Integration) Node24**
+            - DOWNLOAD: [${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-24.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-24.tgz)
+            SHA256: ${{ env.ReleaseSHA256Hash_node24 }}
           files: |
-            ./${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ inputs.node-v2-version }}.tgz
+            ./${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-18.tgz
+            ./${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-24.tgz
           draft: false
           prerelease: true
           make_latest: false
