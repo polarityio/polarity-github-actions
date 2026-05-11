@@ -301,15 +301,13 @@ jobs:
 
             ## Downloads
 
-            ---
-
-            **Polarity Server 5.x (v2 Integration) Node18**
+            **Polarity Server 5.x (v2 framework) Node18**
             - DOWNLOAD: [${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-18.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-18.tgz)
             SHA256: ${{ env.ReleaseSHA256Hash_node18 }}
 
             ---
 
-            **Polarity Server 5.x (v2 Integration) Node24**
+            **Polarity Server 5.x (v2 framework) Node24**
             - DOWNLOAD: [${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-24.tgz](https://github.com/polarityio/${{ github.event.repository.name }}/releases/download/${{ steps.package-version.outputs.current-version }}/${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-24.tgz)
             SHA256: ${{ env.ReleaseSHA256Hash_node24 }}
           files: |
