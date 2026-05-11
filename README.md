@@ -12,6 +12,34 @@ This repo contains the ability to alter the files of all repositories in the Pol
 - ### Run Integration Development Checklist ([run-int-dev-checklist.yml](./src/individualRepoActions/run-int-dev-checklist.yml))
   This workflow will run on a Pull Request created on `master`, `main`, & `develop`. It runs as a series of checks from the Polarity Integration Development Checklist which can be found at https://github.com/polarityio/polarity-integration-development-checklist
 
+## V2 Build Excludes
+
+The following files and directories are excluded from the v2 release archive. These are development and build artifacts that are not needed at runtime.
+
+**Directories:**
+- `.git`
+- `.github`
+- `src`
+- `tests`
+- `mocks`
+- `docs`
+
+**Files:**
+- `.gitignore`
+- `eslint.config.mjs`
+- `vitest.config.ts`
+- `tsconfig.json`
+- `tsconfig.web.json`
+- `vite.config.js`
+- `.prettierrc`
+- `.prettierignore`
+- `package-lock.json`
+- `README.md`
+
+**File patterns:**
+- `*.js.map`
+- `*.d.ts`
+
 
 ## Steps to Test/Develop
 > ***WARNING!:*** This repo will make changes to all integration repositories if these steps are not followed carefully.
