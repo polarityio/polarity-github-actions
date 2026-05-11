@@ -3,11 +3,6 @@ name: Release Integration
 on:
   workflow_call:
     inputs:
-      node-versions:
-        description: 'JSON array of Node versions to build (e.g., ["18", "24"])'
-        required: false
-        type: string
-        default: '["18", "24"]'
       node-build-version:
         description: 'The Node version used for v2 npm run build'
         required: false
@@ -61,7 +56,7 @@ jobs:
     runs-on: ${{ inputs.os-version }}
     strategy:
       matrix:
-        node-version: ${{ fromJson(inputs.node-versions) }}
+        node-version: ["18", "24"]
     steps:
       - uses: actions/checkout@v5
         with:
@@ -181,7 +176,7 @@ jobs:
     runs-on: ${{ inputs.os-version }}
     strategy:
       matrix:
-        node-version: ${{ fromJson(inputs.node-versions) }}
+        node-version: ["18", "24"]
     steps:
       - uses: actions/checkout@v5
         with:
