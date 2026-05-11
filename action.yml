@@ -26,5 +26,5 @@ branding:
   icon: 'triangle'
   color: 'green'
 runs:
-  using: 'node16'
+  using: 'node24'
   main: 'index.js'
