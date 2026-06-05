@@ -72,7 +72,7 @@ jobs:
         run: |
           npm ci --omit=dev --no-bin-links &&
           cd .. && 
-          tar -h --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz" "./${{ github.event.repository.name }}" &&  
+          tar -h --exclude="./${{ github.event.repository.name }}/.git" --exclude="./${{ github.event.repository.name }}/.gitignore" --exclude="./${{ github.event.repository.name }}/.github" --exclude="devRunnerResults.json" -czvf "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz" "./${{ github.event.repository.name }}" &&
           echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
           mv "${{ github.event.repository.name }}-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz" ${{ github.event.repository.name }} &&
           cd ${{ github.event.repository.name }}
@@ -227,6 +227,7 @@ jobs:
             --exclude="./${{ github.event.repository.name }}/mocks" \
             --exclude="./${{ github.event.repository.name }}/docs" \
             --exclude="./${{ github.event.repository.name }}/README.md" \
+            --exclude="devRunnerResults.json" \
             -czvf "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz" "./${{ github.event.repository.name }}" &&
           echo "buildHash=$(sha256sum '${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz' | grep -oE '^[^ ]*' )" >> $GITHUB_ENV &&
           mv "${{ github.event.repository.name }}-v2-${{ steps.package-version.outputs.current-version }}+node-${{ matrix.node-version }}.tgz" ${{ github.event.repository.name }} &&
