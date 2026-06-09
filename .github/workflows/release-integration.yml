@@ -181,6 +181,8 @@ jobs:
       - uses: actions/checkout@v5
         with:
           lfs: true
+      - name: Ensure LFS files are materialized (noop if lfs large file storage not used)
+        run: git lfs pull
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
