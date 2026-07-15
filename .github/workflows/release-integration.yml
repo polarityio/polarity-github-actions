@@ -18,6 +18,30 @@ on:
         required: false
         type: boolean
         default: true
+      har-publish-enabled:
+        description: >-
+          Publish recorded HAR fixtures (mocks/**/*.har) to S3 on release (INT-2194).
+          Off by default: OIDC needs `permissions: id-token: write` in the caller
+          job, so this is enabled per-repo via the integration template as that
+          permission is rolled out. Flip the default to true once every caller has it.
+        required: false
+        type: boolean
+        default: false
+      har-bucket:
+        description: 'S3 bucket for HAR fixtures (INT-2192).'
+        required: false
+        type: string
+        default: polarity-har-fixtures-test
+      har-publish-role-arn:
+        description: 'IAM role assumed via GitHub OIDC to publish fixtures (INT-2192).'
+        required: false
+        type: string
+        default: arn:aws:iam::623071050687:role/har-fixtures-publish
+      har-aws-region:
+        description: 'AWS region for the HAR fixtures bucket.'
+        required: false
+        type: string
+        default: us-east-1
 
 jobs:
   detect-version:
@@ -321,3 +345,86 @@ jobs:
           generate_release_notes: false
           append_body: true
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  # ──────────────────────────────────────────────
+  # Publish recorded HAR fixtures to S3 (INT-2194)
+  # ──────────────────────────────────────────────
+  # Runs for both v1 and v2 integrations. Independent of the build/release jobs.
+  # Opt-in (har-publish-enabled): the caller job must also grant
+  # `permissions: id-token: write` for the OIDC assume to work.
+  publish-har-fixtures:
+    if: ${{ inputs.har-publish-enabled }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # assume the publish role via GitHub OIDC
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          lfs: true
+      - name: Materialize LFS fixtures (noop if unused)
+        run: git lfs pull || true
+      - name: Detect HAR fixtures
+        id: detect
+        run: |
+          shopt -s globstar nullglob
+          files=(mocks/**/*.har)
+          if [ ${#files[@]} -gt 0 ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "Found ${#files[@]} HAR fixture(s)."
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No mocks/**/*.har — nothing to publish."
+          fi
+      - name: Sanitization gate
+        if: steps.detect.outputs.found == 'true'
+        run: |
+          node - <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          const REDACTED = '[REDACTED]';
+          const NAME_KEYS = new Set(['authorization', 'x-api-key', 'x-auth-token', 'cookie', 'set-cookie']);
+          const NAME_SUBSTR = ['secret', 'token', 'password'];
+          const QUERY_KEYS = new Set(['api_key', 'apikey', 'token', 'key', 'password', 'secret']);
+          const sensitiveHeader = (n) => {
+            const l = (n || '').toLowerCase();
+            return NAME_KEYS.has(l) || NAME_SUBSTR.some((s) => l.includes(s));
+          };
+          const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+            const p = path.join(dir, e.name);
+            return e.isDirectory() ? walk(p) : e.name.endsWith('.har') ? [p] : [];
+          });
+          const bad = [];
+          for (const file of walk('mocks')) {
+            let har;
+            try { har = JSON.parse(fs.readFileSync(file, 'utf8')); }
+            catch { bad.push(`${file}: invalid JSON`); continue; }
+            for (const entry of har?.log?.entries ?? []) {
+              const headers = [...(entry.request?.headers ?? []), ...(entry.response?.headers ?? [])];
+              for (const h of headers) {
+                if (sensitiveHeader(h.name) && h.value !== REDACTED) bad.push(`${file}: header ${h.name}`);
+              }
+              for (const q of entry.request?.queryString ?? []) {
+                if (QUERY_KEYS.has((q.name || '').toLowerCase()) && q.value !== REDACTED) bad.push(`${file}: query ${q.name}`);
+              }
+            }
+          }
+          if (bad.length) {
+            console.error('::error::Unredacted auth material in HAR fixtures (re-record with the SDK --record-har):');
+            for (const b of [...new Set(bad)]) console.error('  ' + b);
+            process.exit(1);
+          }
+          console.log('Sanitization gate passed.');
+          EOF
+      - name: Configure AWS credentials (OIDC)
+        if: steps.detect.outputs.found == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.har-publish-role-arn }}
+          aws-region: ${{ inputs.har-aws-region }}
+      - name: Publish fixtures to S3 (mirror-with-delete)
+        if: steps.detect.outputs.found == 'true'
+        run: |
+          dest="s3://${{ inputs.har-bucket }}/${GITHUB_REPOSITORY#*/}/mocks"
+          echo "Publishing $(find mocks -name '*.har' | wc -l) fixture(s) to $dest"
+          aws s3 sync mocks "$dest" --delete --exclude "*" --include "*.har"
